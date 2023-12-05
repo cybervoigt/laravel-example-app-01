@@ -1,66 +1,221 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
+# Estudando Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Aqui vão os passos que segui para criar um projeto Laravel para estudos, usando 2 computadores (1 Ubuntu e outro Windows com WSL2):
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Instalando Docker engine.
+- Criando um projeto Laravel com Docker.
+- Criando chave SSH para autenticação no GitHub.
+- Criando este repositório aqui no GitHub e salvando o projeto.
+- Baixando o projeto (clone) em outro computador.
+- Executando o projeto em outro computador.
+- .
+- .
+- .
+- .
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# Instalando Docker engine.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Fonte:
+- https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Após instalado, ver a versão do docker:
+- docker -v
 
-## Laravel Sponsors
+Resultado esperado:
+- Docker version 24.0.7, build afdd53b
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Ver a versão do docker compose
+- docker compose version
 
-### Premium Partners
+Resultado esperado:
+- Docker Compose version v2.21.0
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Fonte:
+- https://docs.docker.com/engine/install/linux-postinstall/
 
-## Contributing
+Após instalar Docker engine, no Linux, rodar 2 comandos:
+1) criar um grupo docker (avisou que grupo ja existia)
+- sudo groupadd docker
+2) adicionar o seu usuario ao grupo docker
+- sudo usermod -aG docker $USER
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Foi preciso reiniciar o computador, e para testar se deu certo rodar esse comando sem "sudo"
+- docker run hello-world
 
-## Code of Conduct
+Resultado esperado:
+- Hello from Docker!
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Outro exemplo de comando para testar listando os containers em execução:
+- docker ps
 
-## Security Vulnerabilities
+# Criando um projeto Laravel com Docker.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Fonte:
 
-## License
+- https://laravel.com/docs/10.x/installation#sail-on-linux
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Rodei este comando
+
+- curl -s https://laravel.build/laravel-example-app-01 | bash
+
+Na primeira tentativa deu erro "Docker is not running", pois não tinha executado os 2 comandos citados após instalação.
+
+Resultado esperado:
+
+- Thank you! We hope you build something incredible.
+
+Rodando a Aplicação com o comando sail up (parametro -d serve para não bloquear o terminal)
+
+- ./vendor/bin/sail up -d
+
+Abrir a aplicação no navegador com http://localhost/ 
+
+# Criando chave SSH para autenticação no GitHub.
+
+Fonte:
+
+- https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+
+Criando uma chave SSH, e informar uma senha:
+
+- ssh-keygen -t ed25519 -C "cybervoigt@gmail.com"
+
+Resultado: será criada uma pasta .ssh contendo 2 arquivos dentro
+
+Comando para adicionar a chave criada ao "agente de autenticação":
+
+- ssh-add ~/.ssh/id_ed25519
+
+Informar a senha:
+
+- Enter passphrase for /home/ricardo/.ssh/id_ed25519:
+
+Resultado esperado:
+
+- Identity added: /home/ricardo/.ssh/id_ed25519 (cybervoigt@gmail.com)
+
+Comando cat para exibir a chave, que é o conteudo do arquivo
+
+- cat ~/.ssh/id_ed25519.pub
+
+Resultado esperado:
+- ssh-ed25519 .................... cybervoigt@gmail.com
+
+Acessar o GitHub, menu Settings, depois "SSH and GPG keys", e adicionar nova chave SSH colando o conteúdo retornado no comando acima.
+
+
+# Criando este repositório aqui no GitHub e salvando o projeto.
+
+Acessar o GitHub, aba Repositories, botão New
+
+Informei o mesmo nome "laravel-example-app-01" da pasta
+
+Após criar o repositório, clicar no botão SSH na caixa Quick setup:
+
+seguir as dicas de comandos listados abaixo:
+…or create a new repository on the command line</br>
+echo "# laravel-example-app-01" >> README.md</br>
+  git init</br>
+  git add README.md</br>
+  git commit -m "first commit"</br>
+  git branch -M main</br>
+  git remote add origin git@github.com:cybervoigt/laravel-example-app-01.git</br>
+  git push -u origin main</br>
+
+Entrar na pasta do projeto
+- cd ~/laravel-example-app-01/
+
+Comando para iniciar o repositorio local
+- git init
+
+Testar status do repositório. Os arquivos na cor vermelha não estão sendo monitorados pelo git.
+- git status
+
+Adicionar todos os arquivos da pasta
+- git add .
+
+Após adicionar os arquivos, ao rodar novamente o "git status", os arquivos devem aparecer na cor verde.
+
+Antes de fazer o primeiro commit, deve configurar nome e email do autor/desenvolvedor
+- git config --global user.email "cybervoigt@gmail.com"
+- git config --global user.name "Ricardo Voigt"
+
+Agora sim, commit com uma mensagem
+- git commit -m "meu primeiro commit nesta pasta"
+
+Definir branch main
+- git branch -M main
+
+Agora um comando bem importante, vamos relacionar a pasta local ao repositorio remoto
+- git remote add origin git@github.com:cybervoigt/laravel-example-app-01.git
+
+E por último, o comando que vai enviar/empurrar os arquivos locais para o repositório remoto
+- git push -u origin main
+
+
+
+
+# Baixando o projeto (clone) em outro computador.
+
+Gerar a chave SSH para ter acesso ao repositorio
+
+Comando para baixar o repositório
+- git clone git@github.com:cybervoigt/laravel-example-app-01.git
+
+É possível clonar um repositório público sem SSH, mas assim é como se faz com repositórios privados.
+
+
+# Executando o projeto em outro computador.
+
+A pasta vendor é onde o composer guarda as dependências, isto é, pacotes e bibliotecas de terceiros que o projeto precisa para executar.
+
+Será necessário instalar PHP+Composer
+
+Atualizando repositórios de pacotes do Linux
+- sudo apt-get update
+
+Instalando PHP
+- sudo apt install php8.1-cli
+
+Instalar o composer:
+- php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+- php -r "if (hash_file('sha384', 'composer-setup.php') === 'e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+- php composer-setup.php
+- php -r "unlink('composer-setup.php');"
+
+Fonte:
+- https://getcomposer.org/download/
+
+Antes de rodar "composer update" precisei instalar mais uns pacotes
+- sudo apt install php-curl
+- sudo apt install php-xml
+- sudo apt install zip unzip php-zip
+
+Entrar na pasta do projeto
+- cd ~/laravel-example-app-01/
+
+Depois de rodar, fiquei na dúvida se o certo era "composer update" ou "composer install"
+ - composer update
+
+A pasta "vendor" é criada e gerenciada pelo "composer", e ela não precisa ser enviada ao GitHub, por isso ela já se encontra na lista do arquivo .gitignore.
+
+O arquivo "composer.lock" também foi criado, e nele é gravada a versão instalada de cada pacote ou biblioteca de terceiro.
+
+
+Criando/copiando arquivo .env a partir do .env.example
+- cp .env.example .env
+
+Veja que o campo APP_KEY está vazio dentro do arquivo .env
+
+Comando para criar uma chave para a aplicação
+- php artisan key:generate
+
+
+Rodar a aplicação
+- ./vendor/bin/sail up -d
+
