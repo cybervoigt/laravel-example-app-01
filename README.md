@@ -16,6 +16,15 @@ Aqui vão os passos que segui para criar um projeto Laravel para estudos, usando
 - .
 - .
 
+Objetivo Principal:
+- criar pelo menos um CRUD!
+
+Objetivos secundários:
+- Dominar Laravel
+- Praticar Git e GitHub
+- Conhecer mais sobre Docker
+- (se possível ainda, criar testes unitários: PHPUnit ou Pest)
+- (se possível ainda, fazer o deploy em um serviço de cloud)
 
 
 # Instalando Docker engine.
@@ -85,7 +94,9 @@ Criando uma chave SSH, e informar uma senha:
 
 - ssh-keygen -t ed25519 -C "cybervoigt@gmail.com"
 
-Resultado: será criada uma pasta .ssh contendo 2 arquivos dentro
+Resultado: será criada uma pasta .ssh contendo 2 arquivos:
+- id_ed25519
+- id_ed25519.pub
 
 Comando para adicionar a chave criada ao "agente de autenticação":
 
@@ -111,7 +122,7 @@ Acessar o GitHub, menu Settings, depois "SSH and GPG keys", e adicionar nova cha
 
 # Criando este repositório aqui no GitHub e salvando o projeto.
 
-Acessar o GitHub, aba Repositories, botão New
+Acessar o GitHub, aba Repositories, botão New;
 
 Informei o mesmo nome "laravel-example-app-01" da pasta
 
@@ -133,8 +144,10 @@ Entrar na pasta do projeto
 Comando para iniciar o repositorio local
 - git init
 
-Testar status do repositório. Os arquivos na cor vermelha não estão sendo monitorados pelo git.
+Testar status do repositório.
 - git status
+
+Os arquivos na cor vermelha não estão sendo monitorados pelo git.
 
 Adicionar todos os arquivos da pasta
 - git add .
@@ -167,19 +180,27 @@ Gerar a chave SSH para ter acesso ao repositorio
 Comando para baixar o repositório
 - git clone git@github.com:cybervoigt/laravel-example-app-01.git
 
-É possível clonar um repositório público sem SSH, mas assim é como se faz com repositórios privados.
+É possível clonar um repositório público sem SSH, mas entendi que precisa de chaves SSH para trabalhar com repositórios privados.
 
+Se for necessário zerar tudo no computador local e começar denovo, este é comando para excluir a pasta do projeto:
+- rm -rf laravel-example-app-01/
 
 # Executando o projeto em outro computador.
 
-A pasta vendor é onde o composer guarda as dependências, isto é, pacotes e bibliotecas de terceiros que o projeto precisa para executar.
+A pasta "vendor" é onde o composer guarda as dependências, isto é, pacotes e bibliotecas de terceiros que o projeto precisa para ser executado.
+
+Ela não precisa ser enviada ao GitHub, por isso ela já se encontra na lista do arquivo .gitignore.
 
 Será necessário instalar PHP+Composer, para criar a pasta vendo com as dependencias, incluindo o "sail".
 
-Atualizando repositórios de pacotes do Linux
+Ou não, depois descobri que é possível rodar o composer usando Docker.
+- tentar fazer tudo denovo mais adiante e anotar aqui os passos...
+- docker alguma coisa...
+
+Atualizando repositórios de pacotes do Linux:
 - sudo apt-get update
 
-Instalando PHP
+Instalando PHP:
 - sudo apt install php8.1-cli
 
 Instalar o composer:
@@ -202,7 +223,6 @@ Entrar na pasta do projeto
 Depois de rodar, fiquei na dúvida se o certo era "composer update" ou "composer install"
  - composer update
 
-A pasta "vendor" é criada e gerenciada pelo "composer", e ela não precisa ser enviada ao GitHub, por isso ela já se encontra na lista do arquivo .gitignore.
 
 O arquivo "composer.lock" também foi criado, e nele é gravada a versão instalada de cada pacote ou biblioteca de terceiro.
 
@@ -221,6 +241,7 @@ Rodar a aplicação
 
 Em certo momento, mais adiante quando comecei a rodar outros comandos com sail, vi que eu tinha 2 versões do PHP instaladas.
 - php -version (8.1)
+
 E
 - ./vendor/bin/sail php -version (8.2)
 
@@ -240,19 +261,18 @@ Depois rodar este comando para instalar o Breeze:
 - ./vendor/bin/sail artisan breeze:install
 
 Para esta instalação serão feitas algumas perguntas.
-- faltou listar aqui...
+- faltou listar aqui... selecionei Blade.
 
-Serão criados vários arquivos que podem ser listados rodando "git status".
+Serão criados e alterados alguns arquivos que podem ser listados rodando "git status".
 
-Também devem aparecer 2 novos links na tela inicial da aplicação:
+Na tela inicial da aplicação também devem aparecer 2 novos links:
 - Log in (acessar o sistema)
 - Register (criar um novo usuário)
 
 
+## Percauços e tropeços com banco de dados MySQL e Docker
 
-## Percauços e tropeços...
-
-Ao rodar a aplicação e tentar incluir um usuário clicando no menu Register, deu erro de
+Ao rodar a aplicação e tentar incluir um usuário clicando no menu Register, deu erro de:
 - SQLSTATE[HY000] [2002] Connection refused
 
 Verifiquei que o container do MYSQL não está em execução. Se tiver instalado, também pode ser verificado no Docker Desktop.
@@ -271,10 +291,10 @@ Resolvido seguindo estas dicas, removendo a imagem e volume do mysql:
 - docker volume rm laravel-example-app-01_sail-mysql
 - https://stackoverflow.com/questions/73217146/mysql-container-keep-not-connecting-to-my-container
 
-Denovo, ao clicar no menu Register e tentar criar um usuário, continua 
+Denovo, após rodar denovo a aplicação, ao clicar no menu Register e tentar criar um usuário, erro continua:
 - SQLSTATE[HY000] [2002] Connection refused
 
-Acessando o Mysql por sail
+Acessando o Mysql por sail até funciona
 - ./vendor/bin/sail mysql
 
 Depois entrar no banco de dados
@@ -283,11 +303,72 @@ Depois entrar no banco de dados
 Listando as tabelas:
 - show tables;
 
-Nada! Nenhuma tabela... continua...
+Nada! Nenhuma tabela...
+
+Uma sugestão que achei na internet seria trocar o DB_HOST de 127.0.0.1 para localhost, no arquivo .env, e após fazer isso e tentar rodar o comando migrate o erro do MYSQL mudou para:
+- SQLSTATE[HY000] [2002] No such file or directory
+
+
+Então, neste exato momento eu não tenho acesso ao primeiro computador onde criei o projeto Laravel, pra ver as configurações no arquivo .env original.
+
+Mas lembrei de ter visto em alguma video aula do "Beer and code" sobre configurar o DB_HOST com "mysql" ao inves de "localhost" ou "127.0.0.1", pelo menos em ambiente de desenvolvimento.
+- DB_HOST=mysql
+
+Agora sim, vamos para o próximo passo.
+
+
+## Migrations
+
+Então, o que são migrations?
+- https://laravel.com/docs/10.x/migrations#introduction
+
+Resumindo, Migrations é a forma criada para o framework controlar a estrutura e versão das tabelas no banco de dados.
+
+Referente as tabelas relacionadas ao usuário para autenticação.
+
+Segundo a documentação do Breeze, após a instalação pede para rodar estes comandos abaixo:
+- php artisan migrate
+- npm install
+- npm run dev
+
+Este comando "php artisan migrate" vai executar os arquivos de migrations desta pasta:
+- database/mgrations
+
+Para conferir, basta acessar o MySQL:
+- ./vendor/bin/sail mysql
+
+Entrar no banco de dados:
+- use laravel_example_app_01;
+
+E listar as tabelas:
+- show tables;
+
+Serão criadas estas tabelas:
+- failed_jobs
+- password_reset_tokens
+- personal_access_tokens
+- users
+
+NPM é um gerenciador de pacotes de JavaScript, assim como o composer é para o PHP.
+
+Imagino que o Blade (templating engine) use algumas biliotecas JavaScript para fazer a parte visual das aplicações (view).
+
+Rodei os outros comandos usando o sail/docker:
+- ./vendor/bin/sail npm install
+- ./vendor/bin/sail npm run dev
+
+Ao rodar o "npm run dev", foram atualizadas as dependências de bibliotecas de terceiros, no arquivo "package.json", mais ou menos como é feito com o arquivo "composer.json".
+
+No arquivo package.json foram incluídos itens como:
+- tailwindcss
+- alpinejs
+
+Agora sim, um novo usuário pode ser incluído usando o menu Register.
 
 
 
-## Criar uma branch para commitar essa nota feature.
+
+## Criar uma branch para commitar essa nova feature?
 
 
 
