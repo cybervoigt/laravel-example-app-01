@@ -220,6 +220,8 @@ Executando:
 
 ## Opção 2 - executando composer diretamente no Linux
 
+Instalando PHP+Composer diretamente no Linux.
+
 Atualizando repositórios de pacotes do Linux:
 - sudo apt-get update
 
@@ -282,10 +284,6 @@ Criando uma Branch
 
 Definindo a Branch que vou trabalhar agora:
 - git checkout feature/breeze
-
-Ao listar novamente com o comando "git branch" devem aparecer 2 itens:
-- feature/breeze
-- main
 
 Ao listar novamente com o comando "git branch" devem aparecer 2 itens:
 - * feature/breeze
@@ -415,5 +413,49 @@ No arquivo package.json foram incluídos itens como:
 
 Agora sim, um novo usuário pode ser incluído usando o menu Register.
 
+
+
+
+
+# Enviar nova feature do projeto ao GitHub
+
+Então, ao enviar as alterações, com os seguintes passos:
+- git status
+- git add .
+- git -m "new feature Breeze"
+- git push
+
+Retornou este erro:
+<pre>
+fatal: The current branch feature/breeze has no upstream branch.
+To push the current branch and set the remote as upstream, use
+ git push --set-upstream origin feature/breeze
+</pre>
+
+Resumindo, a branch chamada "feature/breeze" não existe no lado remoto, lá no GitHub.
+
+Conforme sugerido, rodei este comando:
+- git push --set-upstream origin feature/breeze
+
+E agora lá no GitHub, ao acessar o repositório, abaixo do nome do repositório, deve aparecer
+- 2 branches
+
+Ao clicar em "2 branches" deve aparecer o nome do branch "feature/breeze" em "Your branches" e "Active branches", e ao lado um botão "New pull request".
+
+É necessário criar uma "solicitação de pull" para que a nova feature seja efetivamente inserida no "codebase".
+
+Se não der nenhum conflito de alterações em um mesmo arquivo, você poderá então confirmar fazendo o merge das alterações commitadas pela branch no repositório.
+
+Aconteu aqui um conflito pois eu fiz commit do README.md tanto na branch main como na branch feature/breeze, revisei denovo todo o conteúdo nos pontos com conflito e commitei.
+
+Fonte:
+- https://docs.github.com/pt/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request
+
+
+Após concluir o "Pull request", voltei pra branch main
+- git checkout main
+
+E rodei o comando pull pra ter certeza que o repositorio local estava atualizado
+- git pull
 
 
