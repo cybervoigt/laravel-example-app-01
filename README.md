@@ -448,6 +448,8 @@ Se não der nenhum conflito de alterações em um mesmo arquivo, você poderá e
 
 Aconteu aqui um conflito pois eu fiz commit do README.md tanto na branch main como na branch feature/breeze, revisei denovo todo o conteúdo nos pontos com conflito e commitei.
 
+Agora, ao clicar novamente no link "2 branches", ao invés do botão "New pull request" deve aparecer escrito "Merged".
+
 Fonte:
 - https://docs.github.com/pt/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request
 
