@@ -220,8 +220,6 @@ Executando:
 
 ## Opção 2 - executando composer diretamente no Linux
 
-Instalando PHP+Composer diretamente no Linux.
-
 Atualizando repositórios de pacotes do Linux:
 - sudo apt-get update
 
@@ -247,7 +245,6 @@ Entrar na pasta do projeto
 
 Instalar os pacotes e dependências com composer:
  - composer install
-
 
 ## Rodar a aplicação
 
@@ -285,6 +282,10 @@ Criando uma Branch
 
 Definindo a Branch que vou trabalhar agora:
 - git checkout feature/breeze
+
+Ao listar novamente com o comando "git branch" devem aparecer 2 itens:
+- feature/breeze
+- main
 
 Ao listar novamente com o comando "git branch" devem aparecer 2 itens:
 - * feature/breeze
@@ -413,9 +414,6 @@ No arquivo package.json foram incluídos itens como:
 - alpinejs
 
 Agora sim, um novo usuário pode ser incluído usando o menu Register.
-
-
-
 
 
 
