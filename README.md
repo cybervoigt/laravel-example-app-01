@@ -5,26 +5,28 @@
 
 Aqui vão os passos que segui para criar um projeto Laravel para estudos, usando 2 computadores (1 Ubuntu e outro Windows com WSL2):
 
+A ideia então seria simular um ambiente mais próximo do "mundo real" onde eu vou criar um novo projeto Laravel, e fazer upload/commit no GitHub, e depois baixar/clone o projeto em outro computador e executá-lo.
+
 - Instalando Docker engine.
 - Criando um projeto Laravel com Docker.
 - Criando chave SSH para autenticação no GitHub.
 - Criando este repositório aqui no GitHub e salvando o projeto.
 - Baixando o projeto (clone) em outro computador.
 - Executando o projeto em outro computador.
-- .
-- .
+- Criar uma branch para adicionar nova feature ao projeto.
+- Instalando Laravel/Breeze para autenticação de usuários.
 - .
 - .
 
 Objetivo Principal:
-- criar pelo menos um CRUD!
+- Dominar Laravel.
 
 Objetivos secundários:
-- Dominar Laravel
-- Praticar Git e GitHub
-- Conhecer mais sobre Docker
-- (se possível ainda, criar testes unitários: PHPUnit ou Pest)
-- (se possível ainda, fazer o deploy em um serviço de cloud)
+- Criar pelo menos um CRUD usando Laravel+MySQL.
+- Praticar Git e GitHub.
+- Conhecer mais sobre Docker.
+- (se possível ainda, criar testes unitários: PHPUnit ou Pest).
+- (se possível ainda, fazer o deploy em um serviço de cloud).
 
 
 # Instalando Docker engine.
@@ -72,26 +74,25 @@ Rodei este comando
 
 - curl -s https://laravel.build/laravel-example-app-01 | bash
 
-Na primeira tentativa deu erro "Docker is not running", pois não tinha executado os 2 comandos citados após instalação.
+Na primeira tentativa deu erro "Docker is not running", pois não tinha executado os 2 comandos citados após instalação do Docker engine.
 
 Resultado esperado:
 
 - Thank you! We hope you build something incredible.
 
-Rodando a Aplicação com o comando sail up (parametro -d serve para não bloquear o terminal)
+Rodando a Aplicação com o comando "sail up" (parametro -d serve para não bloquear o terminal)
 
 - ./vendor/bin/sail up -d
 
-Abrir a aplicação no navegador com http://localhost/ 
+Abrir a aplicação no navegador
+- http://localhost/ 
 
 # Criando chave SSH para autenticação no GitHub.
 
 Fonte:
-
 - https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 
 Criando uma chave SSH, e informar uma senha:
-
 - ssh-keygen -t ed25519 -C "cybervoigt@gmail.com"
 
 Resultado: será criada uma pasta .ssh contendo 2 arquivos:
@@ -99,19 +100,15 @@ Resultado: será criada uma pasta .ssh contendo 2 arquivos:
 - id_ed25519.pub
 
 Comando para adicionar a chave criada ao "agente de autenticação":
-
 - ssh-add ~/.ssh/id_ed25519
 
 Informar a senha:
-
 - Enter passphrase for /home/ricardo/.ssh/id_ed25519:
 
 Resultado esperado:
-
 - Identity added: /home/ricardo/.ssh/id_ed25519 (cybervoigt@gmail.com)
 
 Comando cat para exibir a chave, que é o conteudo do arquivo
-
 - cat ~/.ssh/id_ed25519.pub
 
 Resultado esperado:
@@ -119,6 +116,7 @@ Resultado esperado:
 
 Acessar o GitHub, menu Settings, depois "SSH and GPG keys", e adicionar nova chave SSH colando o conteúdo retornado no comando acima.
 
+Eu repeti esta etapa nos 2 computadores.
 
 # Criando este repositório aqui no GitHub e salvando o projeto.
 
@@ -126,23 +124,25 @@ Acessar o GitHub, aba Repositories, botão New;
 
 Informei o mesmo nome "laravel-example-app-01" da pasta
 
-Após criar o repositório, clicar no botão SSH na caixa Quick setup:
+Após criar o repositório, clicar no botão SSH na caixa "Quick setup" e seguir as dicas de comandos listados abaixo:
+<pre>
+…or create a new repository on the command line
+echo "# laravel-example-app-01" >> README.md
+  git init
+  git add README.md
+  git commit -m "first commit"
+  git branch -M main
+  git remote add origin git@github.com:cybervoigt/laravel-example-app-01.git
+  git push -u origin main
+</pre>
 
-seguir as dicas de comandos listados abaixo:
-…or create a new repository on the command line</br>
-echo "# laravel-example-app-01" >> README.md</br>
-  git init</br>
-  git add README.md</br>
-  git commit -m "first commit"</br>
-  git branch -M main</br>
-  git remote add origin git@github.com:cybervoigt/laravel-example-app-01.git</br>
-  git push -u origin main</br>
-
-Entrar na pasta do projeto
+Entrar na pasta do projeto:
 - cd ~/laravel-example-app-01/
 
 Comando para iniciar o repositorio local
 - git init
+
+Ao criar um projeto Laravel, ele já cria um arquivo README.md, que eu estou editando agora mesmo e gravando o passo a passo.
 
 Testar status do repositório.
 - git status
@@ -175,9 +175,9 @@ E por último, o comando que vai enviar/empurrar os arquivos locais para o repos
 
 # Baixando o projeto (clone) em outro computador.
 
-Gerar a chave SSH para ter acesso ao repositorio
+Repetir o passoe descrito anteriormente para gerar outra chave SSH, com mesmo e-mail cadastrado no GitHub, para ter acesso ao repositorio.
 
-Comando para baixar o repositório
+Comando para baixar o repositório usando SSH:
 - git clone git@github.com:cybervoigt/laravel-example-app-01.git
 
 É possível clonar um repositório público sem SSH, mas entendi que precisa de chaves SSH para trabalhar com repositórios privados.
@@ -188,16 +188,17 @@ Se for necessário zerar tudo no computador local e começar denovo, este é com
 
 # Executando o projeto em outro computador.
 
-A pasta "vendor" é onde o composer guarda as dependências, isto é, pacotes e bibliotecas de terceiros que o projeto precisa para ser executado.
+A pasta "vendor" é onde o composer guarda as dependências, isto é, pacotes e bibliotecas de terceiros feitos em PHP que o projeto precisa para ser executado.
 
 Ela não precisa ser enviada ao GitHub, por isso ela já se encontra na lista do arquivo .gitignore.
 
-Será necessário instalar PHP+Composer, para criar a pasta vendo com as dependencias, incluindo o "sail".
+Duas opções para executar o composer:
 
 ## Opção 1 - executando composer com Docker
 
-Ou não, depois descobri que é possível rodar o composer usando Docker.
-- criei o arquivo "script_docker_run" baseado na aula do Beer and code
+Será necessário criar um "shell script" para rodar o Docker passando alguns parâmetros.
+
+Vou criar um arquivo "script_docker_run" baseado no exemplo do curso "Beed and code".
 
 Código do arquivo "script_docker_run":
 <pre>
@@ -208,7 +209,9 @@ docker run --rm -i \
  composer:2.4.2 "$@"
  </pre>
 
-Permissão de executar o arquivo "script_docker_run"
+Resumindo, a primeira linha define que o arquivo é um "shell script", e o restante é o comando "docker run" com vários parâmetros.
+
+Adicionar permissão de execução no arquivo
 - chmod +x script_docker_run
 
 Executando:
@@ -243,11 +246,9 @@ Entrar na pasta do projeto
 Instalar os pacotes e dependências com composer:
  - composer install
 
-
 ## Rodar a aplicação
 
 O arquivo "composer.lock" foi criado, e nele é gravada a versão instalada de cada pacote ou biblioteca de terceiros.
-
 
 Criando/copiando arquivo .env a partir do .env.example
 - cp .env.example .env
@@ -277,16 +278,20 @@ Comando para listar:
 - git branch
 
 Criando uma Branch
-- git checkout feature/breeze
+- git branch feature/breeze
 
-Definindo a Branch que vou trabalhar agora
+Definindo a Branch que vou trabalhar agora:
 - git checkout feature/breeze
 
 Ao listar novamente com o comando "git branch" devem aparecer 2 itens:
 - feature/breeze
 - main
 
-# Instalando Laravel/Breeze para autenticação
+Ao listar novamente com o comando "git branch" devem aparecer 2 itens:
+- * feature/breeze
+-   main
+
+# Instalando Laravel/Breeze para autenticação de usuários
 
 Então, Breeze é um módulo/pacote pronto para autenticação de usuários em uma aplicação Laravel.
 
@@ -301,7 +306,7 @@ Depois rodar este comando para instalar o Breeze:
 - ./vendor/bin/sail artisan breeze:install
 
 Para esta instalação serão feitas algumas perguntas.
-- faltou listar aqui... selecionei Blade.
+- faltou listar aqui... selecionei "Blade with Alpine".
 
 Serão criados e alterados alguns arquivos que podem ser listados rodando "git status".
 
@@ -348,7 +353,8 @@ Nada! Nenhuma tabela...
 Uma sugestão que achei na internet seria trocar o DB_HOST de 127.0.0.1 para localhost, no arquivo .env, e após fazer isso e tentar rodar o comando migrate o erro do MYSQL mudou para:
 - SQLSTATE[HY000] [2002] No such file or directory
 
-## Solução
+## Solução para conectar no banco de dados
+
 Então, neste exato momento eu não tenho acesso ao primeiro computador onde criei o projeto Laravel, pra ver as configurações no arquivo .env original.
 
 Mas lembrei de ter visto em alguma video aula do "Beer and code" sobre configurar o DB_HOST com "mysql" ao inves de "localhost" ou "127.0.0.1", pelo menos em ambiente de desenvolvimento.
@@ -395,7 +401,7 @@ Serão criadas estas tabelas:
 
 NPM é um gerenciador de pacotes de JavaScript, assim como o composer é para o PHP.
 
-Imagino que o Blade (templating engine) use algumas biliotecas JavaScript para fazer a parte visual das aplicações (view).
+O Blade é o  "templating engine" do Laravel, e us a bilioteca Alpine (JavaScript), para fazer a parte visual (view) da aplicação.
 
 Rodei os outros comandos usando o sail/docker:
 - ./vendor/bin/sail npm install
@@ -408,12 +414,6 @@ No arquivo package.json foram incluídos itens como:
 - alpinejs
 
 Agora sim, um novo usuário pode ser incluído usando o menu Register.
-
-
-
-
-
-
 
 
 
