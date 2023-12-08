@@ -184,6 +184,7 @@ Comando para baixar o repositório
 
 Se for necessário zerar tudo no computador local e começar denovo, este é comando para excluir a pasta do projeto:
 - rm -rf laravel-example-app-01/
+- Lembrar de commitar este arquivo README.md antes de excluir a pasta!
 
 # Executando o projeto em outro computador.
 
@@ -193,9 +194,28 @@ Ela não precisa ser enviada ao GitHub, por isso ela já se encontra na lista do
 
 Será necessário instalar PHP+Composer, para criar a pasta vendo com as dependencias, incluindo o "sail".
 
+## Opção 1 - executando composer com Docker
+
 Ou não, depois descobri que é possível rodar o composer usando Docker.
-- tentar fazer tudo denovo mais adiante e anotar aqui os passos...
-- docker alguma coisa...
+- criei o arquivo "script_docker_run" baseado na aula do Beer and code
+
+Código do arquivo "script_docker_run":
+<pre>
+#!/usr/bin/env bash
+docker run --rm -i \
+ -v $PWD:/app \
+ -u $(id -u):$(id -g) \
+ composer:2.4.2 "$@"
+ </pre>
+
+Permissão de executar o arquivo "script_docker_run"
+- chmod +x script_docker_run
+
+Executando:
+- ./script_docker_run composer install
+
+
+## Opção 2 - executando composer diretamente no Linux
 
 Atualizando repositórios de pacotes do Linux:
 - sudo apt-get update
@@ -203,7 +223,7 @@ Atualizando repositórios de pacotes do Linux:
 Instalando PHP:
 - sudo apt install php8.1-cli
 
-Instalar o composer:
+Comandos para instalar o composer:
 - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 - php -r "if (hash_file('sha384', 'composer-setup.php') === 'e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 - php composer-setup.php
@@ -220,11 +240,13 @@ Antes de rodar "composer update" precisei instalar mais uns pacotes
 Entrar na pasta do projeto
 - cd ~/laravel-example-app-01/
 
-Depois de rodar, fiquei na dúvida se o certo era "composer update" ou "composer install"
- - composer update
+Instalar os pacotes e dependências com composer:
+ - composer install
 
 
-O arquivo "composer.lock" também foi criado, e nele é gravada a versão instalada de cada pacote ou biblioteca de terceiro.
+## Rodar a aplicação
+
+O arquivo "composer.lock" foi criado, e nele é gravada a versão instalada de cada pacote ou biblioteca de terceiros.
 
 
 Criando/copiando arquivo .env a partir do .env.example
@@ -233,18 +255,36 @@ Criando/copiando arquivo .env a partir do .env.example
 Veja que o campo APP_KEY está vazio dentro do arquivo .env
 
 Comando para criar uma chave para a aplicação
+1) opção 1 - com Docker
+- ./script_docker_run php artisan key:generate
+2) opção 2 - PHP direto no Linux
 - php artisan key:generate
-
 
 Rodar a aplicação
 - ./vendor/bin/sail up -d
 
-Em certo momento, mais adiante quando comecei a rodar outros comandos com sail, vi que eu tinha 2 versões do PHP instaladas.
-- php -version (8.1)
+Abrir aplicação no navegador:
+- http://localhost/
 
-E
-- ./vendor/bin/sail php -version (8.2)
+# Criar uma branch para adicionar nova feature ao projeto
 
+Branch, como o próprio nome diz, é uma ramificação (galho) do projeto.
+- https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging
+
+Pensei em criar uma branch pra registrar que eu vou adicionar uma nova feature ao projeto, no caso é o pacote Breeze do Laravel para autenticação de usuários.
+
+Comando para listar:
+- git branch
+
+Criando uma Branch
+- git checkout feature/breeze
+
+Definindo a Branch que vou trabalhar agora
+- git checkout feature/breeze
+
+Ao listar novamente com o comando "git branch" devem aparecer 2 itens:
+- feature/breeze
+- main
 
 # Instalando Laravel/Breeze para autenticação
 
@@ -308,13 +348,20 @@ Nada! Nenhuma tabela...
 Uma sugestão que achei na internet seria trocar o DB_HOST de 127.0.0.1 para localhost, no arquivo .env, e após fazer isso e tentar rodar o comando migrate o erro do MYSQL mudou para:
 - SQLSTATE[HY000] [2002] No such file or directory
 
-
+## Solução
 Então, neste exato momento eu não tenho acesso ao primeiro computador onde criei o projeto Laravel, pra ver as configurações no arquivo .env original.
 
 Mas lembrei de ter visto em alguma video aula do "Beer and code" sobre configurar o DB_HOST com "mysql" ao inves de "localhost" ou "127.0.0.1", pelo menos em ambiente de desenvolvimento.
 - DB_HOST=mysql
 
 Agora sim, vamos para o próximo passo.
+
+## Próximo passo
+
+Segundo a documentação do Breeze, após a instalação pede para rodar estes comandos abaixo:
+- php artisan migrate
+- npm install
+- npm run dev
 
 
 ## Migrations
@@ -325,11 +372,6 @@ Então, o que são migrations?
 Resumindo, Migrations é a forma criada para o framework controlar a estrutura e versão das tabelas no banco de dados.
 
 Referente as tabelas relacionadas ao usuário para autenticação.
-
-Segundo a documentação do Breeze, após a instalação pede para rodar estes comandos abaixo:
-- php artisan migrate
-- npm install
-- npm run dev
 
 Este comando "php artisan migrate" vai executar os arquivos de migrations desta pasta:
 - database/mgrations
@@ -348,6 +390,8 @@ Serão criadas estas tabelas:
 - password_reset_tokens
 - personal_access_tokens
 - users
+
+## NPM
 
 NPM é um gerenciador de pacotes de JavaScript, assim como o composer é para o PHP.
 
@@ -368,7 +412,7 @@ Agora sim, um novo usuário pode ser incluído usando o menu Register.
 
 
 
-## Criar uma branch para commitar essa nova feature?
+
 
 
 
