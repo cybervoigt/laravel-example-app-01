@@ -572,7 +572,44 @@ Um "middleware" é como um filtro, que faz testes e redirecionamentos.
 Resumindo, os parâmetros ['auth','verified'] passados na rota "hellouser" são apelidos(aliases) para os middlewares "Authenticate" e "EnsureEmailIsVerified" definidos no arquivo:
 - app/Http/Kernel.php
 
+## Criando uma Branch apenas para commitar este teste de Rota
 
+Criando uma Branch
+- git branch testing/routes
+
+Definindo Branch atual
+- git checkout testing/routes
+
+Nesta Branch quero commitar apenas este arquivo
+- git add routes/web.php
+
+Commit
+- git commit -m "testando rota com middleware - hellouser"
+
+Criando Branch no repositório remoto e enviando
+- git push --set-upstream origin testing/routes
+
+De volta ao GitHub, ao clicar no link "3 branches" a branch "testing/routes" deve aparecer na opção "Your branches", com o botão "New pull request".
+
+Se aparecer esta frase:
+- Able to merge. These branches can be automatically merged.
+
+Siginifica que não há nenhum conflito.
+
+Clicar no botão
+- Create pull request
+
+O GitHub tem algumas opções de configurar e definir regras, imagino que vc pode definir quem (outras pessoas) para fazer essa parte de analisar e gerenciar as "requisições de pull" e confirmar.
+
+Clicar em "Merge pull request" para avançar, e pede mais uma vez para clicar em "Confirm merge" para finalizar.
+
+De volta ao terminal, e voltando ao branch main
+- git checkout main
+
+Agora vou commitar denovo o README.md com esses passos:
+- git add README.md
+- git commit -m "passos criando mais uma branch sobre rotas"
+- git push
 
 
 # Criando Models de Atividades e Clientes
@@ -588,10 +625,12 @@ O Laravel tem um módulo chamado Eloquent, um Object-Relational Mapper (ORM) que
 
 
 Ideia inicial com apenas 2 tabelas:
-- tabela de Ramos/Tipos de Atividades (Activities)
-- tabela de Clientes (Customers)
+- tabela de Ramos/Tipos de Atividades
+- tabela de Clientes
 
-Nomes das tabelas em inglês: Activities e Customers.
+Padrão a ser adotado:
+- Nome das Models em inglês no singular: Activity e Customer.
+- Nome das tabelas o Laravel vai definir automaticamente no plural: Activities e Customers.
 
 Cada Cliente será associado a um Ramo de Atividade.
 
@@ -640,6 +679,13 @@ protected $fillable = [
 
 Já o arquivo "ActivitySeeder.php" vamos programar a inserção de registros na tabela apenas com objetivo de testes.
 
+Dentro da function "run" vai um bloco desse para cada linha que queremos inserir na tabela:
+<pre>
+DB::table('activities')->insert([
+    'name' => 'Construtora',
+]);
+</pre>
+
 Fonte:
 - https://laravel.com/docs/10.x/seeding
 
@@ -648,9 +694,59 @@ Fonte:
 O primeiro passo então é rodar a migration para criar a tabela no banco de dado:
 - ./vendor/bin/sail php artisan migrate
 
+Aparentemente deu certo, pois apareceu o nome do arquivo:
+- 2023_12_09_221359_create_activities_table.php
+
+Consultei no MySQL, e o comando "desc activities" retornou a estrutura da tabela:
+<pre>
++-------------+-----------------+------+-----+---------+----------------+
+| Field       | Type            | Null | Key | Default | Extra          |
++-------------+-----------------+------+-----+---------+----------------+
+| id          | bigint unsigned | NO   | PRI | NULL    | auto_increment |
+| name        | varchar(100)    | NO   |     | NULL    |                |
+| description | varchar(255)    | YES  |     | NULL    |                |
+| created_at  | timestamp       | YES  |     | NULL    |                |
+| updated_at  | timestamp       | YES  |     | NULL    |                |
++-------------+-----------------+------+-----+---------+----------------+
+5 rows in set (0.05 sec)
+</pre>
+
 E agora rodar o comando para executar o Seeder
 - ./vendor/bin/sail php artisan db:seed
 
+Acho que não deu certo, pois no resultado apareceu apenas
+- Seeding database.
+
+E não apareceu nome do arquivo "ActivitySeeder.php"
+
+Acessei o MySQL e ao consultar a tabela com "select * from activities" retornou:
+- Empty set (VAZIO, nenhum registro...)
+
+Outra opção, agora passando o nome da class
+- ./vendor/bin/sail php artisan db:seed --class=ActivitySeeder
+
+Ainda não.
+
+Uma dica que eu li na Internet seria verificar no arquivo
+- DatabaseSeeder.php
+
+E adicionar esta na linha na function "run":
+- $this->call(ActivitySeeder::class);
+
+DONE!!!
+<pre>
+ysql> select * from activities;
++----+------------------------+-------------+------------+------------+
+| id | name                   | description | created_at | updated_at |
++----+------------------------+-------------+------------+------------+
+|  1 | Construtora            | NULL        | NULL       | NULL       |
+|  2 | Revenda de Carros      | NULL        | NULL       | NULL       |
+|  3 | Supermercado           | teste...    | NULL       | NULL       |
+|  4 | Material de constru��o | NULL        | NULL       | NULL       |
+|  5 | Material de el�trico   | NULL        | NULL       | NULL       |
++----+------------------------+-------------+------------+------------+
+5 rows in set (0.00 sec)
+</pre>
 
 
 <hr>
