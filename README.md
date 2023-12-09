@@ -15,6 +15,9 @@ A ideia então seria simular um ambiente mais próximo do "mundo real" onde eu v
 - Executando o projeto em outro computador.
 - Criar uma branch para adicionar nova feature ao projeto.
 - Instalando Laravel/Breeze para autenticação de usuários.
+- Enviando a nova feature do projeto ao GitHub.
+- De volta ao computador 1.
+- Criando uma Model de clientes.
 - .
 - .
 
@@ -318,8 +321,10 @@ Na tela inicial da aplicação também devem aparecer 2 novos links:
 Ao rodar a aplicação e tentar incluir um usuário clicando no menu Register, deu erro de:
 - SQLSTATE[HY000] [2002] Connection refused
 
-Verifiquei que o container do MYSQL não está em execução. Se tiver instalado, também pode ser verificado no Docker Desktop.
+Verifiquei que o container do MYSQL não está em execução. Provavelmente porque neste computador eu já tinha criado e rodado outros projetos de teste.
 - docker ps
+
+Os containers em execução também podem ser verificados no Docker Desktop, se tiver instalado.
 
 Log de erros no Docker/Mysql
 - docker logs id_do_container...
@@ -334,7 +339,7 @@ Resolvido seguindo estas dicas, removendo a imagem e volume do mysql:
 - docker volume rm laravel-example-app-01_sail-mysql
 - https://stackoverflow.com/questions/73217146/mysql-container-keep-not-connecting-to-my-container
 
-Denovo, após rodar denovo a aplicação, ao clicar no menu Register e tentar criar um usuário, erro continua:
+Após rodar denovo a aplicação, ao clicar no menu Register e tentar criar um usuário, o erro continua:
 - SQLSTATE[HY000] [2002] Connection refused
 
 Acessando o Mysql por sail até funciona
@@ -355,7 +360,7 @@ Uma sugestão que achei na internet seria trocar o DB_HOST de 127.0.0.1 para loc
 
 Então, neste exato momento eu não tenho acesso ao primeiro computador onde criei o projeto Laravel, pra ver as configurações no arquivo .env original.
 
-Mas lembrei de ter visto em alguma video aula do "Beer and code" sobre configurar o DB_HOST com "mysql" ao inves de "localhost" ou "127.0.0.1", pelo menos em ambiente de desenvolvimento.
+Mas lembrei de ter visto em alguma video aula ou OLW do "Beer and code" sobre configurar o DB_HOST com "mysql" ao inves de "localhost" ou "127.0.0.1", pelo menos em ambiente de desenvolvimento quando o MySQL estiver rodando em outro container Docker.
 - DB_HOST=mysql
 
 Agora sim, vamos para o próximo passo.
@@ -417,7 +422,7 @@ Agora sim, um novo usuário pode ser incluído usando o menu Register.
 
 
 
-# Enviar nova feature do projeto ao GitHub
+# Enviando nova feature do projeto ao GitHub
 
 Então, ao enviar as alterações, com os seguintes passos:
 - git status
@@ -461,3 +466,61 @@ E rodei o comando pull pra ter certeza que o repositorio local estava atualizado
 - git pull
 
 
+# De volta ao computador 1
+
+De volta ao computador 1, onde o projeto Laravel foi criado e feito o primeiro commit do projeto no GitHub, o objetivo agora será atualizar o projeto e fazer a aplicação rodar com tudo funcionando.
+
+Primeiro comando a ser executado:
+- git pull
+
+Esse comando baixa/puxa todas as alterações realizadas no repositório remoto, e atualiza o repositório local com estas alterações.
+
+Pra variar, eu tinha feito uma alteração neste README.md e não deixou fazer o pull.
+
+Copiei o conteúdo do READM.md para o Notepadd++ e rodei este comando para desfazer as alterações e voltar a versão anterior do arquivo:
+- git reset README.md
+
+Agora sim o "git pull" funcionou.
+
+Mas então, ao clicar em Login
+- http://localhost/login
+
+Vem o seguinte erro:
+- Vite manifest not found
+
+Ao lado na caixa verde a sugestão para corrigir o erro rodando este comando "npm run dev".
+
+Como aqui não tinha o NPM instalado, rodei estes 2 comandos:
+./vendor/bin/sail npm install
+./vendor/bin/sail npm run dev
+
+Apenas pressionando F5 no navegador, não funcionou.
+
+Fechei/Parei e rodei denovo a aplicação:
+- ./vendo/bin/sail down
+- ./vendo/bin/sail up -d
+
+Ao tentar novamente o erro continua:
+- Vite manifest not found
+
+O comando que faltava era:
+./vendor/bin/sail npm run build
+
+Agora sim, vamos tentar criar um usuário:
+- http://localhost/register
+
+Desta vez o erro foi de que a tabela "users" não existe
+- Base table or view not found...
+
+Conforme descrito na caixa verde na direita, a solução é rodar as migrations:
+- ./vendor/bin/sail php artisan migrate
+
+Resultado esperado:
+- You're logged in!
+
+Neste momento os 2 computadores estão iguais, com o projeto rodando com o mesmo "codebase".
+
+
+# Criando uma Model de clientes
+
+to be continued...
