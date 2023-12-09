@@ -611,6 +611,25 @@ Agora vou commitar denovo o README.md com esses passos:
 - git commit -m "passos criando mais uma branch sobre rotas"
 - git push
 
+Então, deu o erro abaixo ao executar "git push"
+<pre>
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'github.com:cybervoigt/laravel-example-app-01.git'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+</pre>
+Isso aconteceu porque o repositório remoto foi modificado, e preciso rodar um "git pull" para garantir que o repositório locl esteja atualizado.
+
+Primeiro:
+- git reset (desfaz o git add, pois estou editando README.md)
+
+Agora sim:
+- git pull
+
+Rodar denovo os passos acima: add, commit e push.
+
 
 # Criando Models de Atividades e Clientes
 
