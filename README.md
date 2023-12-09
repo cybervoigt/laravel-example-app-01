@@ -17,7 +17,9 @@ A ideia então seria simular um ambiente mais próximo do "mundo real" onde eu v
 - Instalando Laravel/Breeze para autenticação de usuários.
 - Enviando a nova feature do projeto ao GitHub.
 - De volta ao computador 1.
+- Rotas (e Middlewares).
 - Criando uma Model de clientes.
+- .
 - .
 - .
 
@@ -69,22 +71,20 @@ Outro exemplo de comando para testar listando os containers em execução:
 
 # Criando um projeto Laravel com Docker.
 
-Fonte:
+O "Sail é uma abstração do Docker", criado para facilitar a execução de comandos no Docker.
 
+Fonte:
 - https://laravel.com/docs/10.x/installation#sail-on-linux
 
 Rodei este comando
-
 - curl -s https://laravel.build/laravel-example-app-01 | bash
 
 Na primeira tentativa deu erro "Docker is not running", pois não tinha executado os 2 comandos citados após instalação do Docker engine.
 
 Resultado esperado:
-
 - Thank you! We hope you build something incredible.
 
 Rodando a Aplicação com o comando "sail up" (parametro -d serve para não bloquear o terminal)
-
 - ./vendor/bin/sail up -d
 
 Abrir a aplicação no navegador
@@ -521,6 +521,137 @@ Resultado esperado:
 Neste momento os 2 computadores estão iguais, com o projeto rodando com o mesmo "codebase".
 
 
-# Criando uma Model de clientes
+# Rotas (e Middlewares)
 
+Na pasta "routes" tem diferentes arquivos para gerenciar as Rotas da aplicação, que na prática são os caminhos/URL que podem ser acessados no sistema.
+
+Pelo que entendi então, não precisa mais ficar configurando rotas dentro de arquivo ".htaccess", o Laravel já faz esse trabalho.
+
+Fonte:
+- https://laravel.com/docs/10.x/routing
+
+Por exemplo, ao inserir este código no arquivo web.php
+<pre>
+Route::get('/helloworld', function() {
+    return "Hello World...";
+});
+</pre>
+
+Agora é possível acessar esta URL:
+- http://localhost/helloworld
+
+Resultado esperado no navegador:
+- Hello World...
+
+Barbadinha... :-D
+
+Outros exemplos podem ser verificados no arquivo "auth.php" que foi criado pelo módulo Breeze e contém as rotas "/login" e "/register", para um usuário acessar o sistema e se cadastrar no sistema, respectivamente.
+
+Mais um pequeno exemplo, vou criar uma rota, olhando o exemplo "/dashboard", no arquivo "web.php" onde é verificado se o usuário está logado no sistema.
+
+<pre>
+Route::get('/hellouser', function() {
+    return "Hello User: ". auth()->user()->name;
+})->middleware(['auth', 'verified'])->name('hellouser');
+</pre>
+
+Ao acessar este caminho:
+- http://localhost/hellouser
+
+Caso o usuário não esteja logado, será redirecionado automaticamente para a tela de Login atraves de um "middleware".
+
+Após acessar o sistema com e-mail e senha, ele será redirecionado de volta ao "/hellouser" e deve aparecer então a seguinte mensagem:
+- Hello User: nome do usuário
+
+
+## Middlewares
+
+Um "middleware" é como um filtro, que faz testes e redirecionamentos.
+- https://laravel.com/docs/10.x/middleware
+
+Resumindo, os parâmetros ['auth','verified'] passados na rota "hellouser" são apelidos(aliases) para os middlewares "Authenticate" e "EnsureEmailIsVerified" definidos no arquivo:
+- app/Http/Kernel.php
+
+
+
+
+# Criando Models de Atividades e Clientes
+
+O que é uma Model ?
+- https://laravel.com/docs/10.x/eloquent#introduction
+
+Resumindo:
+- uma Model é uma classe que representa uma tabela em um banco de dados.
+- E cada objeto criado a partir dessa classe representa uma linha na respectiva tabela.
+
+O Laravel tem um módulo chamado Eloquent, um Object-Relational Mapper (ORM) que é responsável por fazer esta tarefa de Mapeamento Objeto-Relacional. Isso mesmo, esse foi o assunto do meu TCC (trabalho de conclusão de curso) em 2006.
+
+
+Ideia inicial com apenas 2 tabelas:
+- tabela de Ramos/Tipos de Atividades (Activities)
+- tabela de Clientes (Customers)
+
+Nomes das tabelas em inglês: Activities e Customers.
+
+Cada Cliente será associado a um Ramo de Atividade.
+
+Exemplos (Seeds) de Ramos de Atividades:
+- Construtora
+- Revenda de Carros
+- Supermercado
+- Material de construção
+- Material elétrico
+
+## Criando Model de Atividades
+
+Rodar o comando "artisan" para criar a Model:
+- ./vendor/bin/sail artisan make:model Activity -ms
+
+Junto com a criação do arquivo da classe Model:
+- o parâmetro -m também cria o arquivo de Migration
+- o parâmetro -s também cria o arquivo de Seeds
+
+Resultado esperado:
+- Model [app/Models/Activity.php] created successfully.  
+- Migration [database/migrations/2023_12_09_221359_create_activities_table.php] created successfully.  
+- Seeder [database/seeders/ActivitySeeder.php] created successfully.
+
+Essa brincadeira tá começando a ficar legal...
+
+## Migration
+
+No arquivo "2023_12_09_221359_create_activities_table.php", vou definir a estrutura da tabela adicionando estas linhas na function "up":
+- $table->string('name', 100);
+- $table->string('description')->nullable();
+
+Serão criadas 2 colunas para guardar texto/string na tabela: name e description. Veja que eu defini o tamanho máximo de 100 caracteres para "name" e também defini que a coluna "description" pode ficar vazia, isto é, aceita NULL.
+
+## Model
+
+Nesta classe "Activity" será necessário informar a variável $fillable:
+<pre>
+protected $fillable = [
+    'name',
+    'description'
+];
+</pre>
+
+## Seeder
+
+Já o arquivo "ActivitySeeder.php" vamos programar a inserção de registros na tabela apenas com objetivo de testes.
+
+Fonte:
+- https://laravel.com/docs/10.x/seeding
+
+## Rodando Migration + Seeder
+
+O primeiro passo então é rodar a migration para criar a tabela no banco de dado:
+- ./vendor/bin/sail php artisan migrate
+
+E agora rodar o comando para executar o Seeder
+- ./vendor/bin/sail php artisan db:seed
+
+
+
+<hr>
 to be continued...
