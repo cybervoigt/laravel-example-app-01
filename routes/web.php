@@ -29,3 +29,12 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('/helloworld', function() {
+    return "Hello World...";
+});
+
+Route::get('/hellouser', function() {
+    return "Hello User: ". auth()->user()->name;
+})->middleware(['auth', 'verified'])->name('hellouser');
+
