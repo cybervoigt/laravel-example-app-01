@@ -625,10 +625,26 @@ Isso aconteceu porque o repositório remoto foi modificado, e preciso rodar um "
 Primeiro:
 - git reset (desfaz o git add, pois estou editando README.md)
 
-Agora sim:
+Agora ao rodar este comando:
 - git pull
 
-Rodar denovo os passos acima: add, commit e push.
+Deu outro erro:
+- fatal: Need to specify how to reconcile divergent branches.
+
+Com umas dicas de como configurar isso no git.
+
+Esse comando lista as configurações
+- git config --list
+
+Eu defini esta opção:
+- git config pull.rebase false
+
+E depois fiz o pull
+- git pull
+
+Abriu o editor nano pedindo pra escrever o motivo do merge, apenas pressionei CTRL+X pra sair.
+
+O arquivo README.md não estava mais aparecendo como alterado no "git status", então rodei apenas "git push" e o arquivo foi enviado. Que confusão... 
 
 
 # Criando Models de Atividades e Clientes
