@@ -18,7 +18,7 @@ A ideia então seria simular um ambiente mais próximo do "mundo real" onde eu v
 - Enviando a nova feature do projeto ao GitHub.
 - De volta ao computador 1.
 - Rotas (e Middlewares).
-- Criando uma Model de clientes.
+- Criando Models de Atividades e Clientes.
 - .
 - .
 - .
@@ -681,6 +681,9 @@ Exemplos (Seeds) de Ramos de Atividades:
 Rodar o comando "artisan" para criar a Model:
 - ./vendor/bin/sail artisan make:model Activity -ms
 
+Para ter mais informações, rodar comando com --help
+- ./vendor/bin/sail artisan make:model --help
+
 Junto com a criação do arquivo da classe Model:
 - o parâmetro -m também cria o arquivo de Migration
 - o parâmetro -s também cria o arquivo de Seeds
@@ -690,47 +693,80 @@ Resultado esperado:
 - Migration [database/migrations/2023_12_09_221359_create_activities_table.php] created successfully.  
 - Seeder [database/seeders/ActivitySeeder.php] created successfully.
 
-Essa brincadeira tá começando a ficar legal...
 
 ## Migration
 
-No arquivo "2023_12_09_221359_create_activities_table.php", vou definir a estrutura da tabela adicionando estas linhas na function "up":
+No arquivo "2023_12_09_221359_create_activities_table.php", a function "up" já contém 2 linhas:
+- $table->id();
+- $table->timestamps();
+
+A primeira indica que a tabela terá uma coluna "id" que será a chave primária sequencial da tabela. E a segunda linha indica a criação automática de 2 campos tipo "timestamp" para guardar automaticamente a data e hora de criação (created_at) e edição (updated_at) do registro/linha/objeto.
+
+Então, agora vou definir a estrutura da tabela adicionando estas linhas na function "up":
+- $table->foreignId('user_id');
 - $table->string('name', 100);
 - $table->string('description')->nullable();
+- $table->softDeletes();
 
-Serão criadas 2 colunas para guardar texto/string na tabela: name e description. Veja que eu defini o tamanho máximo de 100 caracteres para "name" e também defini que a coluna "description" pode ficar vazia, isto é, aceita NULL.
+Será criada uma coluna "user_id" tipo "chave estrangeira" que vai se relacionar com o usuário logado, da tabela "users".
+
+Também serão criadas 2 colunas para guardar texto/string na tabela: name e description. Veja que eu defini o tamanho máximo de 100 caracteres para "name" e também defini que a coluna "description" pode ficar vazia, isto é, aceita NULL.
+
+E a linha "softDeletes" será explicada mais abaixo, pois é um recurso que precisa ser definido na Model.
 
 ## Model
 
-Nesta classe "Activity" será necessário informar a variável $fillable:
+Nesta classe "Activity" será necessário criar a variável $fillable para informar os campos que normalmente a aplicação vai preencher:
 <pre>
 protected $fillable = [
+    'user_id',
     'name',
     'description'
 ];
 </pre>
 
+### Soft Deleting
+- https://laravel.com/docs/10.x/eloquent#soft-deleting
+
+O Laravel fornece um recurso chamado "soft deleting" para quando não queremos excluir/deletar um registro da tabela, mas apenas desativar/inativar este registro/objeto. Semelhante ao campo "ativo"(S/N) que tenho feito em meus projetos, mas será criada uma coluna tipo "timestamp" para indicar a data e hora da "exclusão" do registro".
+
+Para ativar este recurso na model de Atividades, é preciso adicionar a namespace "SoftDeletes" acima da classe Activity:
+- use Illuminate\Database\Eloquent\SoftDeletes;
+
+E dentro da classe Activity, basta adicionar "SoftDeletes" na linha "use":
+- use HasFactory, SoftDeletes;
+
+Dica: esta característica foi implementada no Laravel usando o recurso de "traits" do PHP:
+- https://www.php.net/manual/pt_BR/language.oop5.traits.php
+
+Esse recurso pode ser visto como uma forma de implementar "herança múltipla" de objetos.
+
 ## Seeder
 
-Já o arquivo "ActivitySeeder.php" vamos programar a inserção de registros na tabela apenas com objetivo de testes.
+Já no arquivo "ActivitySeeder.php" vamos programar a inserção de registros na tabela apenas com objetivo de testes e facilitar no processo de desenvolvimento.
 
 Dentro da function "run" vai um bloco desse para cada linha que queremos inserir na tabela:
 <pre>
 DB::table('activities')->insert([
+    'user_id' => 1,
     'name' => 'Construtora',
 ]);
 </pre>
 
+Repare que para aceitar o campo "user_id" igual a 1, deve ser criado o usuário (com id = 1) clicando no menu Register da tela inicial da aplicação.
+
 Fonte:
 - https://laravel.com/docs/10.x/seeding
 
-## Rodando Migration + Seeder
+## Rodando Migration
 
 O primeiro passo então é rodar a migration para criar a tabela no banco de dado:
 - ./vendor/bin/sail php artisan migrate
 
 Aparentemente deu certo, pois apareceu o nome do arquivo:
-- 2023_12_09_221359_create_activities_table.php
+- 2023_12_10_221359_create_activities_table.php
+
+
 
 Consultei no MySQL, e o comando "desc activities" retornou a estrutura da tabela:
 <pre>
@@ -738,13 +774,17 @@ Consultei no MySQL, e o comando "desc activities" retornou a estrutura da tabela
 | Field       | Type            | Null | Key | Default | Extra          |
 +-------------+-----------------+------+-----+---------+----------------+
 | id          | bigint unsigned | NO   | PRI | NULL    | auto_increment |
+| user_id     | bigint unsigned | NO   |     | NULL    |                |
 | name        | varchar(100)    | NO   |     | NULL    |                |
 | description | varchar(255)    | YES  |     | NULL    |                |
 | created_at  | timestamp       | YES  |     | NULL    |                |
 | updated_at  | timestamp       | YES  |     | NULL    |                |
+| deleted_at  | timestamp       | YES  |     | NULL    |                |
 +-------------+-----------------+------+-----+---------+----------------+
-5 rows in set (0.05 sec)
+7 rows in set (0.05 sec)
 </pre>
+
+## Rodando Seeder
 
 E agora rodar o comando para executar o Seeder
 - ./vendor/bin/sail php artisan db:seed
@@ -782,6 +822,8 @@ ysql> select * from activities;
 +----+------------------------+-------------+------------+------------+
 5 rows in set (0.00 sec)
 </pre>
+
+
 
 
 <hr>
