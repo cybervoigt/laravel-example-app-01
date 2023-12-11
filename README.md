@@ -491,8 +491,8 @@ Vem o seguinte erro:
 Ao lado na caixa verde a sugestão para corrigir o erro rodando este comando "npm run dev".
 
 Como aqui não tinha o NPM instalado, rodei estes 2 comandos:
-./vendor/bin/sail npm install
-./vendor/bin/sail npm run dev
+- ./vendor/bin/sail npm install
+- ./vendor/bin/sail npm run dev
 
 Apenas pressionando F5 no navegador, não funcionou.
 
@@ -504,7 +504,7 @@ Ao tentar novamente o erro continua:
 - Vite manifest not found
 
 O comando que faltava era:
-./vendor/bin/sail npm run build
+- ./vendor/bin/sail npm run build
 
 Agora sim, vamos tentar criar um usuário:
 - http://localhost/register
