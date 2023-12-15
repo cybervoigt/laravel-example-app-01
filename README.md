@@ -19,7 +19,8 @@ A ideia então seria simular um ambiente mais próximo do "mundo real" onde eu v
 - De volta ao computador 1.
 - Rotas (e Middlewares).
 - Criando Models de Atividades e Clientes.
-- .
+- Criando uma Rota para listar Atividades.
+- Criando uma View com Blade.
 - .
 - .
 
@@ -841,7 +842,9 @@ ysql> select * from activities;
 5 rows in set (0.00 sec)
 </pre>
 
-## Criando uma Rota para listar as Atividades do Usuário logado.
+# Criando uma Rota para listar Atividades
+
+Criando uma Rota para listar as Atividades do Usuário logado.
 
 No arquivo web.php vamos adicionar uma nova rota, que vai acessar o usuário logado, acessar a function "activities" criada na Model do usuário, e chamar a function "all" do Laravel Eloquent, que retorna um array com a lista de itens encontrados.
 <pre>
@@ -858,7 +861,21 @@ O navegador deve mostrar todo o conteúdo da tabela em formato JSON:
 [{"id":1,"user_id":1,"name":"Construtora","description":null,"created_at":null,"updated_at":null,"deleted_at":null},{"id":2,"user_id":1,"name":"Revenda de Carros","description":null,"created_at":null,"updated_at":null,"deleted_at":null},{"id":3,"user_id":1,"name":"Supermercado","description":"teste...","created_at":null,"updated_at":null,"deleted_at":null},{"id":4,"user_id":1,"name":"Material de constru\u00e7\u00e3o","description":null,"created_at":null,"updated_at":null,"deleted_at":null},{"id":5,"user_id":1,"name":"Material de el\u00e9trico","description":null,"created_at":null,"updated_at":null,"deleted_at":null}]
 </pre>
 
-## Criando uma view Blade para listar as Atividades do Usuário logado.
+
+# Consultando e testando os dados
+
+Para cosultar uma variável, o Laravel tem uma function chamada "dd" (Dump and Die), ela tem um comportamento semelhante a usar a combinação das functions "var_dump" e "die" nativas do PHP.
+
+Fonte:
+- https://laravel.com/docs/10.x/helpers#method-dd
+
+Por exemplo, para visualizar mais detalhes sobre a lista de atividades, basta incluir esta linha dentro da rota "/useractivities":
+- dd(auth()->user()->activities->all());
+
+
+# Criando uma View com Blade
+
+Criando uma view Blade para listar as Atividades do Usuário logado.
 
 Fonte:
 - https://laravel.com/docs/10.x/blade#introduction
@@ -867,6 +884,10 @@ Criei o arquivo "myactivities.blade.php" como exemplo para listar os registros d
 
 E na rota "/useractivities" ajustei o return para
 - return View('myactivities');
+
+
+
+
 
 <hr>
 to be continued...

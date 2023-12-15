@@ -6,13 +6,23 @@
     <title>Laravel - User Activities</title>
 </head>
 <body>
-    <h2>My Activities</h2>
+    <header>
+        <div>
+            My Activities - User name: {{auth()->user()->name}}
+        </div>
+        <nav>
+            <input type="text" place>
+        </nav>
+    </header>
+
     @auth
 
-        @foreach (auth()->user()->activities->all() as $item)
-            <p>{{ $item->name }}</p>
-        @endforeach
-
+        <ul>
+            @foreach (auth()->user()->activities->all() as $item)
+            <li>{{ $item->name }}</li>
+            @endforeach
+        </ul>
+            
     @endauth
 </body>
 </html>

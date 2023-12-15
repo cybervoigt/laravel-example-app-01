@@ -43,6 +43,8 @@ Route::get('/useractivities', function() {
     // retornando a lista de atividades relacionadas ao usuário
     //return auth()->user()->activities->all();
 
+    // dd(auth()->user()->activities->all());
+
     // retornando uma view baseada no arquivo "myactivities.blade.php"
     return View('myactivities');
 
