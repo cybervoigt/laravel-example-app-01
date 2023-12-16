@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ActivityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,13 +40,6 @@ Route::get('/hellouser', function() {
     return "Hello User: ". auth()->user()->name;
 })->middleware(['auth', 'verified'])->name('hellouser');
 
-Route::get('/useractivities', function() {
-    // retornando a lista de atividades relacionadas ao usuário
-    //return auth()->user()->activities->all();
 
-    // dd(auth()->user()->activities->all());
-
-    // retornando uma view baseada no arquivo "myactivities.blade.php"
-    return View('myactivities');
-
-})->middleware(['auth', 'verified'])->name('useractivities');
+Route::get('/useractivities', [ActivityController::class, 'index'])
+    ->middleware(['auth', 'verified'])->name('useractivities');

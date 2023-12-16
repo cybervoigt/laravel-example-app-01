@@ -8,7 +8,7 @@
 <body>
     <header>
         <div>
-            My Activities - User name: {{auth()->user()->name}}
+            My Activities - User name: {{$username}}
         </div>
         <nav>
             <input type="text" place>
@@ -18,11 +18,11 @@
     @auth
 
         <ul>
-            @foreach (auth()->user()->activities->all() as $item)
+            @foreach ($activities as $item)
             <li>{{ $item->name }}</li>
             @endforeach
         </ul>
-            
+
     @endauth
 </body>
 </html>
