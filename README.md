@@ -21,6 +21,9 @@ A ideia então seria simular um ambiente mais próximo do "mundo real" onde eu v
 - Criando Models de Atividades e Clientes.
 - Criando uma Rota para listar Atividades.
 - Criando uma View com Blade.
+- Criando uma classe Controller.
+- .
+- .
 - .
 - .
 
@@ -656,8 +659,9 @@ O que é uma Model ?
 Resumindo:
 - uma Model é uma classe que representa uma tabela em um banco de dados.
 - E cada objeto criado a partir dessa classe representa uma linha na respectiva tabela.
+- É responsável pelo acesso e manipulação (CRUD) dos dados desta tabela.
 
-O Laravel tem um módulo chamado Eloquent, um Object-Relational Mapper (ORM) que é responsável por fazer esta tarefa de Mapeamento Objeto-Relacional. Isso mesmo, esse foi o assunto do meu TCC (trabalho de conclusão de curso) em 2006.
+O Laravel tem um módulo chamado Eloquent, um Object-Relational Mapper (ORM) que é responsável por fazer esta tarefa de Mapeamento Objeto-Relacional. Esse foi o assunto do meu TCC (trabalho de conclusão de curso) em 2006: Aspectos de um framework para Mapeamento Objeto-Relacional.
 
 
 Ideia inicial com apenas 2 tabelas:
@@ -885,7 +889,54 @@ Criei o arquivo "myactivities.blade.php" como exemplo para listar os registros d
 E na rota "/useractivities" ajustei o return para
 - return View('myactivities');
 
+Então, segundo uma dica que achei, NÃO é uma boa prática no Laravel fazer consultas ao banco de dados dentro das classes VIEW.
 
+Isto é, na primeira versão do arquivo "myactivities.blade.php" foi usado esse trecho de código para buscar as atividades do usuário logado:
+- auth()->user()->activities->all()
+
+Próximo passo agora, será então criar uma classe CONTROLLER, e essa classe vai passar os dados necessários para a VIEW.
+
+
+# Criando uma classe Controller
+
+Fechando esse "triangulo amoroso" do MVC, agora vou criar o C de Controller.
+
+Já criei o M de Model, que é a classe que abstrai o acesso e manipulação do banco de dados, implementado no Laravel com o "Eloquent ORM".
+
+Já iniciei um exemplo da letra V de View, que é a parte visual da aplicação, a interface do suário, como o usuário vai ver e manipular os dados do sistema.
+
+Uma classe Controller é responsável por receber, direcionar e responder as requisições recebidas no sistema, sejam requisições vindas do usuário ou de outra aplicação.
+
+Vamos rodar o comando "artisan" para criar uma classe Controller para as Atividades:
+- ./vendor/bin/sail php artisan make:controller ActivityController
+
+Fonte:
+- https://laravel.com/docs/10.x/controllers#introduction
+
+Foi criado o seguinte arquivo:
+- app/Http/Controllers/ActivityController.php
+
+Vou criar uma função "index" e esta função vai retornar a View e passando a lista de Atividades:
+<pre>
+public function index()
+{
+    return View('myactivities', [
+        'username' => auth()->user()->name,
+        'activities' => auth()->user()->activities->all()
+    ]);
+}
+</pre>
+
+A "cereja do bolo" agora é ajustar a Rota "/useractivities" para que o processamento seja feito pelo Controller, e não mais seja diretamente retornada a View "myactivities".
+
+No arquivo "routes/web.php" deve ser adicionada a classe:
+- use App\Http\Controllers\ActivityController;
+
+E a rota agora fica assim, apontando automaticamente para a function "index" da classe ActivityController:
+<pre>
+Route::get('/useractivities', [ActivityController::class, 'index'])
+    ->middleware(['auth', 'verified'])->name('useractivities');
+</pre>
 
 
 
