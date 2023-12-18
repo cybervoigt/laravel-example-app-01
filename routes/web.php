@@ -37,6 +37,7 @@ Route::get('/helloworld', function() {
 });
 
 Route::get('/hellouser', function() {
+    dd(auth()->user()->activities);
     return "Hello User: ". auth()->user()->name;
 })->middleware(['auth', 'verified'])->name('hellouser');
 

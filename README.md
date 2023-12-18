@@ -255,12 +255,13 @@ Entrar na pasta do projeto
 Instalar os pacotes e dependências com composer:
  - composer install
 
-## Rodar a aplicação
-
-O arquivo "composer.lock" foi criado, e nele é gravada a versão instalada de cada pacote ou biblioteca de terceiros.
+## Arquivo de configurações .env
 
 Criando/copiando arquivo .env a partir do .env.example
 - cp .env.example .env
+
+Fonte:
+- https://laravel.com/docs/10.x/configuration#environment-configuration
 
 Veja que o campo APP_KEY está vazio dentro do arquivo .env
 
@@ -269,6 +270,10 @@ Comando para criar uma chave para a aplicação
 - ./script_docker_run php artisan key:generate
 2) opção 2 - PHP direto no Linux
 - php artisan key:generate
+
+## Rodar a aplicação
+
+O arquivo "composer.lock" foi criado, e nele é gravada a versão instalada de cada pacote ou biblioteca de terceiros.
 
 Rodar a aplicação
 - ./vendor/bin/sail up -d
@@ -491,6 +496,12 @@ Mas então, ao clicar em Login
 
 Vem o seguinte erro:
 - Vite manifest not found
+
+Resumindo, Vite (https://vitejs.dev/) é uma ferramenta que empacota os arquivos CSS e Javascript (bundling assets) para o deploy da aplicação.
+Fonte:
+- https://laravel.com/docs/10.x/frontend#bundling-assets
+- https://laravel.com/docs/10.x/vite#introduction
+
 
 Ao lado na caixa verde a sugestão para corrigir o erro rodando este comando "npm run dev".
 
@@ -731,6 +742,7 @@ protected $fillable = [
 </pre>
 
 ### Definir o relacionamento entre uma Atividade e o usuário
+- https://laravel.com/docs/10.x/eloquent-relationships#defining-relationships
 
 Nesta mesma classe "Activity" vou incluir uma function para mapear o relacionamento entre a Atividade e o usuário que criou esta atividade:
 <pre>
@@ -740,7 +752,9 @@ public function user()
 }
 </pre>
 
-Já por outro lado, esta relação também pode ser implementada do ponto de vista do usuário, para indicar que ele "possui várias" Atividades. Esta function pode ser criada na classe Mode de usuários (app/Models/User.php)
+Já por outro lado, esta relação também pode ser implementada do ponto de vista do usuário, para indicar que ele "possui várias" Atividades.
+
+Esta function "activities" pode ser criada na classe Model de usuários (app/Models/User.php) e retornará uma lista (Collection) das atividades relacionadas.
 <pre>
 public function activities()
 {
@@ -883,8 +897,9 @@ Criando uma view Blade para listar as Atividades do Usuário logado.
 
 Fonte:
 - https://laravel.com/docs/10.x/blade#introduction
+- https://laravel.com/docs/10.x/frontend#introduction
 
-Criei o arquivo "myactivities.blade.php" como exemplo para listar os registros da tabela de atividades, relacionados ao usuário logado.
+Criei o arquivo "resources/views/myactivities.blade.php" como exemplo simples para listar os registros da tabela de atividades, relacionados ao usuário logado.
 
 E na rota "/useractivities" ajustei o return para
 - return View('myactivities');
@@ -894,7 +909,22 @@ Então, segundo uma dica que achei, NÃO é uma boa prática no Laravel fazer co
 Isto é, na primeira versão do arquivo "myactivities.blade.php" foi usado esse trecho de código para buscar as atividades do usuário logado:
 - auth()->user()->activities->all()
 
-Próximo passo agora, será então criar uma classe CONTROLLER, e essa classe vai passar os dados necessários para a VIEW.
+
+## Embutindo a view no template da aplicação
+
+Para fins de estudos, a primeira versão do arquivo "myactivities.blade.php" foi criado contendo a estrutura completa de um arquivo HTML, deste a tag "DOCTYPE html" até o "/html", incluindo as outras tags "head" e "body".
+
+Agora vou ajustar para que o conteúdo de "myactivities" seja embutido dentro do layout principal da aplicação, usando a tag "x-app-layout".
+
+Analisando o arquivo "resouces/views/layouts/app.blade.php", vale destaque para 2 variáveis:
+- $header
+- $slot
+("slot" que é usado para inserção de conteúdo dinâmico)
+
+
+
+
+Próximo passo será criar uma classe CONTROLLER, e essa classe vai passar os dados necessários para a VIEW.
 
 
 # Criando uma classe Controller
@@ -938,7 +968,46 @@ Route::get('/useractivities', [ActivityController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('useractivities');
 </pre>
 
+## Requisções HTTP
+- https://laravel.com/docs/10.x/requests#introduction
 
+No caso da necessidade de serem passados mais parâmetros na URL da aplicação, por exemplo na roda "/useractivities":
+- http://localhost/useractivities/?message=helloword
+
+Precisamos de um parâmetro Request no Controller para ler o parâmetro "message" da requisição:
+<pre>
+public function index(Request $request)
+{
+    $params = $request->all();
+    return View('myactivities', [
+        'username' => auth()->user()->name,
+        'activities' => auth()->user()->activities->all(),
+        'message' => isset($params['message']) ? $params['message'] : '',
+    ]);
+}
+</pre>
+
+
+
+
+# Usando Collections (ao inves de Arrays)
+
+- https://laravel.com/docs/10.x/collections#introduction
+
+Ao rodar esta linha de código:
+- auth()->user()->activities->all()
+
+A function "all" é um método do objeto Collection retornado pela function "activities".
+
+Por exemplo, ao invés de retornar um Array e usar a function "count" do PHP:
+<pre>
+$list = auth()->user()->activities->all();
+echo "count: " . count($list);
+</pre>
+É possível chamar a function "count" do próprio Collection:
+<pre>
+echo "count: ". auth()->user()->activities->count();
+</pre>
 
 <hr>
 to be continued...
