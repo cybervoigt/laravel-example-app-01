@@ -429,14 +429,12 @@ Agora sim, um novo usuário pode ser incluído usando o menu Register.
 
 
 
-
-
 # Enviando nova feature do projeto ao GitHub
 
-Então, ao enviar as alterações, com os seguintes passos:
+Então, enviar as alterações com os seguintes comandos:
 - git status
 - git add .
-- git -m "new feature Breeze"
+- git commit -m "new feature Breeze"
 - git push
 
 Retornou este erro:
