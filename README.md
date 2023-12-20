@@ -22,7 +22,9 @@ A ideia então seria simular um ambiente mais próximo do "mundo real" onde eu v
 - Criando uma Rota para listar Atividades.
 - Criando uma View com Blade.
 - Criando uma classe Controller.
-- .
+- Requisções HTTP.
+- Usando Collections (ao inves de Arrays).
+- Validando dados de uma Requisição.
 - .
 - .
 - .
@@ -413,7 +415,7 @@ Serão criadas estas tabelas:
 
 NPM é um gerenciador de pacotes de JavaScript, assim como o composer é para o PHP.
 
-O Blade é o  "templating engine" do Laravel, e us a bilioteca Alpine (JavaScript), para fazer a parte visual (view) da aplicação.
+O Blade é um "templating engine" do Laravel, e usa a bilioteca Alpine (JavaScript), para fazer a parte visual (View) da aplicação.
 
 Rodei os outros comandos usando o sail/docker:
 - ./vendor/bin/sail npm install
@@ -540,10 +542,12 @@ Na pasta "routes" tem diferentes arquivos para gerenciar as Rotas da aplicação
 
 Pelo que entendi então, não precisa mais ficar configurando rotas dentro de arquivo ".htaccess", o Laravel já faz esse trabalho.
 
+Uma dica é que se a rota vai retornar conteúdo HTML use o "web.php", mas se a rota retornar conteúdo JSON use o arquivo "api.php".
+
 Fonte:
 - https://laravel.com/docs/10.x/routing
 
-Por exemplo, ao inserir este código no arquivo web.php
+Por exemplo, para criar uma rota que responde a requisições HTTP com GET, basta inserir este código no arquivo "web.php":
 <pre>
 Route::get('/helloworld', function() {
     return "Hello World...";
@@ -633,7 +637,7 @@ hint: not have locally. This is usually caused by another repository pushing
 hint: to the same ref. You may want to first integrate the remote changes
 hint: (e.g., 'git pull ...') before pushing again.
 </pre>
-Isso aconteceu porque o repositório remoto foi modificado, e preciso rodar um "git pull" para garantir que o repositório locl esteja atualizado.
+Isso aconteceu porque o repositório remoto foi modificado, e preciso rodar um "git pull" para garantir que o repositório local esteja atualizado.
 
 Primeiro:
 - git reset (desfaz o git add, pois estou editando README.md)
@@ -966,13 +970,13 @@ Route::get('/useractivities', [ActivityController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('useractivities');
 </pre>
 
-## Requisções HTTP
+# Requisções HTTP
 - https://laravel.com/docs/10.x/requests#introduction
 
 No caso da necessidade de serem passados mais parâmetros na URL da aplicação, por exemplo na roda "/useractivities":
-- http://localhost/useractivities/?message=helloword
+- http://localhost/useractivities/?filterName=helloword
 
-Precisamos de um parâmetro Request no Controller para ler o parâmetro "message" da requisição:
+Precisamos de um parâmetro Request no Controller para ler o parâmetro "filterName" da requisição:
 <pre>
 public function index(Request $request)
 {
@@ -980,11 +984,10 @@ public function index(Request $request)
     return View('myactivities', [
         'username' => auth()->user()->name,
         'activities' => auth()->user()->activities->all(),
-        'message' => isset($params['message']) ? $params['message'] : '',
+        'filterName' => isset($params['filterName']) ? $params['filterName'] : '',
     ]);
 }
 </pre>
-
 
 
 
@@ -992,20 +995,41 @@ public function index(Request $request)
 
 - https://laravel.com/docs/10.x/collections#introduction
 
-Ao rodar esta linha de código:
-- auth()->user()->activities->all()
+Ao rodar esta linha de código no Controller (no array de parametros passados para a View):
+- 'activities' => auth()->user()->activities->all(),
 
-A function "all" é um método do objeto Collection retornado pela function "activities".
+A function "all" é um método do objeto Collection (retornado pela function "activities"), e que retorna um Array.
 
-Por exemplo, ao invés de retornar um Array e usar a function "count" do PHP:
-<pre>
-$list = auth()->user()->activities->all();
-echo "count: " . count($list);
-</pre>
+Por exemplo, se for necessário passar para a View mais um parâmetro com a quantidade de itens da lista, ao invés de retornar um Array e usar a function "count" do PHP:
+- 'count' => count(auth()->user()->activities->all()),
+
 É possível chamar a function "count" do próprio Collection:
-<pre>
-echo "count: ". auth()->user()->activities->count();
-</pre>
+- 'count' => auth()->user()->activities->count(),
+
+
+# Fazendo consultas na tabela de Atividades
+
+- https://laravel.com/docs/10.x/database#running-queries
+
+Outra forma de buscar os registros da tabela de Atividades (activities) é usando o facade DB:
+- $activities = DB::select('select * from activities');
+
+
+
+
+
+
+
+
+
+
+# Validando dados de uma Requisição
+
+- https://laravel.com/docs/10.x/validation#introduction
+- https://laravel.com/docs/10.x/validation#quick-writing-the-validation-logic
+
+Vou escrever sobre isso mais tarde...
+
 
 <hr>
 to be continued...
