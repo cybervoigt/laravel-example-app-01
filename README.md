@@ -580,6 +580,8 @@ Caso o usuário não esteja logado, será redirecionado automaticamente para a t
 Após acessar o sistema com e-mail e senha, ele será redirecionado de volta ao "/hellouser" e deve aparecer então a seguinte mensagem:
 - Hello User: nome do usuário
 
+Comando para listar as rotas disponiveis na aplicação:
+- ./vendor/bin/sail php artisan route:list
 
 ## Middlewares
 
@@ -743,7 +745,7 @@ protected $fillable = [
 ];
 </pre>
 
-### Definir o relacionamento entre uma Atividade e o usuário
+### Definir o relacionamento entre uma Atividade e o usuário logado
 - https://laravel.com/docs/10.x/eloquent-relationships#defining-relationships
 
 Nesta mesma classe "Activity" vou incluir uma function para mapear o relacionamento entre a Atividade e o usuário que criou esta atividade:
@@ -989,6 +991,7 @@ public function index(Request $request)
 }
 </pre>
 
+OBS: Ao rodar o comando "artisan make:controller" ver sobre o parâmetro --resource e a relação com a opção "resource" na definição de Rotas!
 
 
 # Usando Collections (ao inves de Arrays)
