@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Activity;
 
 class ActivityController extends Controller
 {
@@ -22,6 +23,15 @@ class ActivityController extends Controller
     {
         $params = $request->all();
 
+        $filterName = isset($params['filterName']) ? $params['filterName'] : '';
+        if($filterName == '')
+        {
+
+            $activities = auth()->user()->activities;
+
+        }
+        else
+        {
 
         // Como validar um limite máximo de 20 caracteres no parametro 'filterName'
 
@@ -34,8 +44,6 @@ class ActivityController extends Controller
         $validator = Validator::make($params, [
             'filterName' => 'max:20',
         ]);
-
-        $filterName = isset($params['filterName']) ? $params['filterName'] : '';
 
         if($validator->fails())
         {
@@ -53,6 +61,7 @@ class ActivityController extends Controller
                 ->get();
 
             //dd($activities);
+        }
         }
 
         return View('myactivities', [
@@ -82,10 +91,15 @@ class ActivityController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Activity $activity)
     {
-        //
-        return $id;
+        // "Model binding"
+        // se o nome do parametro na rota bater com o nome dessa variavel,
+        //  o Laravel já cria automaticamente o objeto referente ao Model
+        if(auth()->user()->id == $activity->user_id)
+        {
+            return $activity;
+        }
     }
 
     /**

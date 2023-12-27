@@ -46,9 +46,9 @@ Route::get('/useractivities', [ActivityController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('useractivities');
 
 
-Route::resource('activity', ActivityController::class)
+Route::resource('atividade', ActivityController::class)
     ->parameters([
-        'activity'=>'idactivity'
+        'atividade'=>'activity'
     ])
     ->except('destroy')
     ->middleware(['auth', 'verified']);

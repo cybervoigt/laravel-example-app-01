@@ -24,6 +24,7 @@ A ideia então seria simular um ambiente mais próximo do "mundo real" onde eu v
 - Criando uma classe Controller.
 - Requisções HTTP.
 - Usando Collections (ao inves de Arrays).
+- Fazendo consultas na tabela de Atividades.
 - Validando dados de uma Requisição.
 - .
 - .
@@ -996,7 +997,6 @@ Route::resource('activity', ActivityController::class)
     ->middleware(['auth', 'verified']);
 </pre>
 
-
 Outro exemplo, se dentro do método "show" do Controller, adicionar esta linha:
 - return $id
 
@@ -1005,6 +1005,54 @@ Para apenas retornar o parâmetro $id recebido, ao abrir este caminho na aplica�
 
 Será exibido apenas o número 1234 no navegador.
 
+
+## Fazendo "Model binding"
+- https://laravel.com/docs/10.x/routing#route-model-binding
+
+Outra situação de exemplo, digamos que o usuário queira que a rota seja escrita em português, ao inves do padrão em inglês do Laravel.
+
+A Rota pode ser escrita em Português
+<pre>
+Route::resource('atividades', ActivityController::class)
+    ->except('destroy')
+    ->middleware(['auth', 'verified']);
+</pre>
+
+Consultando novamente as rotas:
+- ./vendor/bin/sail php artisan route:list --path=atividades
+
+Vou pegar o exemplo do método "show" novamente:
+<pre>
+GET|HEAD        atividades/{atividade} .............................. atividades.show › ActivityController@show
+</pre>
+
+Veja que o nome do parâmetro {atividade} agora está em portugues, e precisa ser redefinido para o mesmo nome da classe Model.
+<pre>
+Route::resource('atividade', ActivityController::class)
+    ->parameters([
+        'atividade'=>'activity'
+    ])
+    ...
+</pre>
+
+Sensacional... Ao abrir este caminho:
+- http://localhost/atividade/1
+
+Os dados do objeto/linha da tabela é retornada em JSON:
+<pre>
+{"id":1,"user_id":1,"name":"Construtora","description":null,"created_at":null,"updated_at":null,"deleted_at":null}
+</pre>
+
+Pergunta: onde seria o ponto ideal agora pra validar se o objeto encontrado, está relacionado ou pertence ao usuário logado?
+- Imagino que seja dentro do Controller.
+
+Por enquanto vou deixar esse IF dentro do método "show" do Controller:
+<pre>
+if(auth()->user()->id == $activity->user_id)
+{
+    return $activity;
+}
+</pre>
 
 
 ## Definindo Middleware em uma classe Controller
@@ -1018,6 +1066,7 @@ public function __construct()
 </pre>
 
 - https://laravel.com/docs/10.x/controllers#controller-middleware
+
 
 # Requisções HTTP
 - https://laravel.com/docs/10.x/requests#introduction
