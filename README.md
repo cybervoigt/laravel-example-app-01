@@ -972,6 +972,53 @@ Route::get('/useractivities', [ActivityController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('useractivities');
 </pre>
 
+## Resource Controller
+
+- https://laravel.com/docs/10.x/controllers#resource-controllers
+
+Ao rodar o comando "artisan make:controller" o parâmetro --resource pode ser adicionado para criar automaticamente métodos padrões (geralmente usados para implementar CRUD: index, create, store, show, edit, update e destroy) na classe Controller.
+
+E para criar uma Rota (no web.php) que vai ler automaticamente estes métodos do controller, deve ser usada a opção "resource":
+- Route::resource('activity', ActivityController::class);
+
+Para listar as rotas disponíveis na aplicação, relacionadas a palavra "activity", basta rodar este comando
+- ./vendor/bin/sail php artisan route:list --path=activity
+
+Fonte:
+- https://laravel.com/docs/10.x/routing#the-route-list
+
+Para desativar alguma dessas Rotas, basta usar a function "except" ou "only".
+
+Por exemplo, usando "except" para desativar a rota "delete" para o método "destroy":
+<pre>
+Route::resource('activity', ActivityController::class)
+    ->except('destroy')
+    ->middleware(['auth', 'verified']);
+</pre>
+
+
+Outro exemplo, se dentro do método "show" do Controller, adicionar esta linha:
+- return $id
+
+Para apenas retornar o parâmetro $id recebido, ao abrir este caminho na aplicação
+- http://localhost/activity/1234
+
+Será exibido apenas o número 1234 no navegador.
+
+
+
+## Definindo Middleware em uma classe Controller
+
+Também é possível definir um Middleware dentro do construtor de um Controller
+<pre>
+public function __construct()
+{
+    $this->middleware(...)
+}
+</pre>
+
+- https://laravel.com/docs/10.x/controllers#controller-middleware
+
 # Requisções HTTP
 - https://laravel.com/docs/10.x/requests#introduction
 
@@ -991,7 +1038,6 @@ public function index(Request $request)
 }
 </pre>
 
-OBS: Ao rodar o comando "artisan make:controller" ver sobre o parâmetro --resource e a relação com a opção "resource" na definição de Rotas!
 
 
 # Usando Collections (ao inves de Arrays)
@@ -1012,18 +1058,29 @@ Por exemplo, se for necessário passar para a View mais um parâmetro com a quan
 
 # Fazendo consultas na tabela de Atividades
 
+Usando a function index do ActivityController como exemplo, outra forma de buscar os registros da tabela de Atividades (activities) é usando o facade DB:
 - https://laravel.com/docs/10.x/database#running-queries
 
-Outra forma de buscar os registros da tabela de Atividades (activities) é usando o facade DB:
+Assim retorna um Array com todas as linhas:
 - $activities = DB::select('select * from activities');
 
+Assim retorna um Collection com todas as linhas:
+- $activities = DB::table('activities')->get();
 
+E agora retorna um Collection com as atividades do usuário logado e onde o nome contém $filterName:
+<pre>
+$activities = DB::table('activities')
+    ->where('user_id', auth()->user()->id)
+    ->where('name', 'like', '%' . $filterName . '%')
+    ->get();
+</pre>
 
+Por exemplo, ao executar esta Rota/URL:
+- http://localhost/useractivities/?filterName=constr
 
-
-
-
-
+Devem ser listados estes registros na tela, para o usuário logado ID=1:
+- Construtora
+- Material de construção
 
 
 # Validando dados de uma Requisição

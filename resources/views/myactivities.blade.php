@@ -13,6 +13,6 @@
 
     @endauth
 
-    <strong>Items : {{$count}} - {{$message}}</strong>
+    <strong>Items : {{$count}} - {{$filterName}}</strong>
 
 </x-app-layout>

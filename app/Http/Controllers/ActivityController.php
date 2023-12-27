@@ -8,6 +8,13 @@ use Illuminate\Support\Facades\Validator;
 
 class ActivityController extends Controller
 {
+
+    // Também é possível definir um midleware dentro de um Controller, no construtor.
+    //public function __construct()
+    //{
+    //   $this->middleware(...)
+    //}
+
     /**
      * Display a listing of the resource.
      */
@@ -30,29 +37,23 @@ class ActivityController extends Controller
 
         $filterName = isset($params['filterName']) ? $params['filterName'] : '';
 
-        $activities = auth()->user()->activities;
-
         if($validator->fails())
         {
+            $activities = auth()->user()->activities;
+
             //dd($validator->messages());
+
             $filterName = $validator->messages();
         }
         elseif($filterName != '')
         {
-            // tentando filtrar as atividades com o parametro recebido
-            // mas usando DB::table não filtra pelo usuário logado 
-            // como faz em auth()->user()->activities
-
-            // $activities = auth()->user()->activities->where('name', $filterName)->get();
-            // $activities = DB::table('activities')->get();
             $activities = DB::table('activities')
+                ->where('user_id', auth()->user()->id)
                 ->where('name', 'like', '%' . $filterName . '%')
                 ->get();
 
-            // $activities = DB::select('select * from activities');
-            // dd($activities);
+            //dd($activities);
         }
-
 
         return View('myactivities', [
             'username' => auth()->user()->name,
@@ -84,6 +85,7 @@ class ActivityController extends Controller
     public function show(string $id)
     {
         //
+        return $id;
     }
 
     /**

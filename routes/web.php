@@ -44,3 +44,12 @@ Route::get('/hellouser', function() {
 
 Route::get('/useractivities', [ActivityController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('useractivities');
+
+
+Route::resource('activity', ActivityController::class)
+    ->parameters([
+        'activity'=>'idactivity'
+    ])
+    ->except('destroy')
+    ->middleware(['auth', 'verified']);
+

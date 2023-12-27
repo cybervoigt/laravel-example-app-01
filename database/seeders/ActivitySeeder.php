@@ -34,5 +34,37 @@ class ActivitySeeder extends Seeder
             'user_id' => 1,
             'name' => 'Material elétrico',
         ]);
+
+        // Adicionando mais linhas na tabela,
+        //  relacionadas ao usuário ID=3
+        DB::table('activities')->insert([
+            'user_id' => 3,
+            'name' => 'Construtora 3',
+        ]);
+        DB::table('activities')->insert([
+            'user_id' => 3,
+            'name' => 'Revenda de Carros 3',
+        ]);
+        DB::table('activities')->insert([
+            'user_id' => 3,
+            'name' => 'Supermercado 3',
+            'description' => 'teste...',
+        ]);
+        DB::table('activities')->insert([
+            'user_id' => 3,
+            'name' => 'Material de construção 3',
+        ]);
+        DB::table('activities')->insert([
+            'user_id' => 3,
+            'name' => 'Material elétricozzzz',
+        ]);
+        DB::table('activities')->insert([
+            'user_id' => 3,
+            'name' => 'Material xxxxx',
+        ]);
+        DB::table('activities')->insert([
+            'user_id' => 3,
+            'name' => 'Material wwwww',
+        ]);
     }
 }
