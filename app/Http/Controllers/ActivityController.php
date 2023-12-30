@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ActivityRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -15,6 +16,15 @@ class ActivityController extends Controller
     //{
     //   $this->middleware(...)
     //}
+
+
+    /**
+     * listando todas as linhas da tabela
+     */
+    public function listAll()
+    {
+        return Activity::all();
+    }
 
     /**
      * Display a listing of the resource.
@@ -77,15 +87,19 @@ class ActivityController extends Controller
      */
     public function create()
     {
-        //
+        return View('activity');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ActivityRequest $request)
     {
+        //dd($request->all());
         //
+        $requestData = $request->all();
+        $requestData['user_id'] = auth()->user()->id;
+        return Activity::create($requestData);
     }
 
     /**
@@ -99,6 +113,10 @@ class ActivityController extends Controller
         if(auth()->user()->id == $activity->user_id)
         {
             return $activity;
+        }
+        else
+        {
+            return 'Access Denied...';
         }
     }
 
