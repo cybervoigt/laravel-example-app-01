@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ActivityController;
+use App\Http\Middleware\TrustProxies;
+use App\Http\Middleware\VerifyCsrfToken;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,11 +47,16 @@ Route::get('/hellouser', function() {
 Route::get('/useractivities', [ActivityController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('useractivities');
 
+Route::get('/allactivities', [ActivityController::class, 'listAll']);
 
 Route::resource('atividade', ActivityController::class)
     ->parameters([
         'atividade'=>'activity'
     ])
     ->except('destroy')
+    ->withoutMiddleware([
+        TrustProxies::class,
+        VerifyCsrfToken::class
+    ])
     ->middleware(['auth', 'verified']);
 

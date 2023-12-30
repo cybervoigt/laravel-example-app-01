@@ -23,9 +23,13 @@ A ideia então seria simular um ambiente mais próximo do "mundo real" onde eu v
 - Criando uma View com Blade.
 - Criando uma classe Controller.
 - Requisções HTTP.
+- Usando o programa Insomnia
 - Usando Collections (ao inves de Arrays).
 - Fazendo consultas na tabela de Atividades.
 - Validando dados de uma Requisição.
+- Criando um formulário com Blade
+- Métodos "create" e "store" do Controller
+- Criando um FormRequest
 - .
 - .
 - .
@@ -1055,6 +1059,22 @@ if(auth()->user()->id == $activity->user_id)
 </pre>
 
 
+### Situação 1
+
+Eu adicionei mais usuários de teste, e no arquivo ActivitySeeder.php eu inseri mais linhas relacionadas a estes outros usuários.
+
+Ao tentar passar um ID de um registro relacionado a outro usuário, está ficando uma tela em branco, por exemplo:
+- http://localhost/atividade/9
+
+
+### Situação 2
+
+Outra situação, é ao tentar passar um ID inexistente, por exemplo:
+- http://localhost/atividade/999
+
+Está retornando a mensagem padrão do Laravel "404 | Not found"
+
+
 ## Definindo Middleware em uma classe Controller
 
 Também é possível definir um Middleware dentro do construtor de um Controller
@@ -1087,6 +1107,27 @@ public function index(Request $request)
 }
 </pre>
 
+# Usando o programa Insomnia
+
+O programa Insomnia é semelhante ao programa Postman, e serve para testar requisições HTTP.
+- https://insomnia.rest/download
+
+Por exemplo, enquanto eu ainda não fiz um Form na aplicação Laravel para gravar um novo registro na tabela, quero testar a rota abaixo que vai receber o POST e criar o objeto/linha na tabela: 
+<pre>
+POST            atividade ........................... atividade.store › ActivityController@store
+</pre>
+
+Pelo que entendi, por padrão o Laravel retornaria o erro "419 | PAGE EXPIRED".
+
+Então tive de adicionar "withoutMiddleware" na rota "Route::resource('atividade',":
+<pre>
+->withoutMiddleware([
+    TrustProxies::class,
+    VerifyCsrfToken::class
+])
+</pre>
+
+Para conseguir enviar um POST e inserir um novo registro na tabela, usando o programa Insomnia.
 
 
 # Usando Collections (ao inves de Arrays)
@@ -1137,7 +1178,70 @@ Devem ser listados estes registros na tela, para o usuário logado ID=1:
 - https://laravel.com/docs/10.x/validation#introduction
 - https://laravel.com/docs/10.x/validation#quick-writing-the-validation-logic
 
-Vou escrever sobre isso mais tarde...
+Vou escrever sobre isso mais tarde... fiz uns testes verificando a variável $filterName, com "max:20"
+
+
+
+# Criando um formulário com Blade
+
+Criei o arquivo "activity.blade.php" baseado no exemplo do Módulo "Especialista Laravel".
+- https://laravel.com/docs/10.x/blade#forms
+
+
+
+
+# Métodos "create" e "store" do Controller
+
+O método "create" é responsável por trazer o Formulário para o usuário:
+<pre>
+public function create()
+{
+    return View('activity');
+}
+</pre>
+
+Enquanto que o método "store" será responsável por receber os dados vindos do Formulário e gravar o objeto/linha no banco de dados.
+<pre>
+public function store(ActivityRequest $request)
+{
+    $requestData = $request->all();
+    $requestData['user_id'] = auth()->user()->id;
+    return Activity::create($requestData);
+}
+</pre>
+
+# Criando um FormRequest
+
+Para validar os dados recebidos em uma requisição, vinda de um formulário, criamos um "form request".
+- https://laravel.com/docs/10.x/validation#form-request-validation
+
+Comando Artisan para criar o "form request" com nome ActivityRequest:
+- ./vendor/bin/sail php artisan make:request ActivityRequest
+
+Arquivo criado:
+- app/Http/Requests/ActivityRequest.php
+
+Nesta classe, temos que definir as regras desejadas no método "rules".
+
+Por exemplo, vou aplicar uma regra para definir que o campo "name" é de preenchimento obrigatório:
+<pre>
+public function rules(): array
+{
+    return [
+        'name' => 'required'
+    ];
+}
+</pre>
+
+Também mudei o return da function authorize() de false pra true.
+
+Agora sim, eu consegui chamar o form:
+- http://localhost/atividade/create
+
+E ao clicar no botão CADASTRAR, é feita a validação de que "name" precisa ser preenchido.
+
+Ao digitar algum valor e tentar novamente, o registro foi gravado com suceso e seus dados retornados para o navegador pelo método "store".
+
 
 
 <hr>
