@@ -728,10 +728,12 @@ No arquivo "2023_12_09_221359_create_activities_table.php", a function "up" já 
 A primeira indica que a tabela terá uma coluna "id" que será a chave primária sequencial da tabela. E a segunda linha indica a criação automática de 2 campos tipo "timestamp" para guardar automaticamente a data e hora de criação (created_at) e edição (updated_at) do registro/linha/objeto.
 
 Então, agora vou definir a estrutura da tabela adicionando estas linhas na function "up":
-- $table->foreignId('user_id');
-- $table->string('name', 100);
-- $table->string('description')->nullable();
-- $table->softDeletes();
+<pre>
+$table->foreignId('user_id')->constrained();
+$table->string('name', 100);
+$table->string('description')->nullable();
+$table->softDeletes();
+</pre>
 
 Será criada uma coluna "user_id" tipo "chave estrangeira" que vai se relacionar com o usuário logado, da tabela "users".
 
@@ -799,10 +801,30 @@ DB::table('activities')->insert([
 ]);
 </pre>
 
-Repare que para aceitar o campo "user_id" igual a 1, deve ser criado o usuário (com id = 1) clicando no menu Register da tela inicial da aplicação.
+Repare que para aceitar o campo "user_id" igual a 1, deve ser criado o usuário (com id = 1) clicando no menu Register da tela inicial da aplicação, ou também pode ser criado um Seeder para a Model de Usuários.
 
 Fonte:
 - https://laravel.com/docs/10.x/seeding
+
+
+### Criando um Seeder de usuários
+
+Para não precisar incluir manualmente usuários, pelo menu Register, vou criar Seeder de 3 usuários fictícios com base neste exemplo
+- https://laravel.com/docs/10.x/seeding#writing-seeders
+
+Comando para criar um Seeder:
+- ./vendor/bin/sail php artisan make:seeder UserSeeder
+
+No arquivo UserSeeder.php, adicionar este bloco 3x na function run
+<pre>
+$name = Str::random(10);
+DB::table('users')->insert([
+    'name' => $name,
+    'email' => $name.'@example.com',
+    'password' => Hash::make('password'),
+]);
+</pre>
+
 
 ## Rodando Migration
 
@@ -813,14 +835,13 @@ Aparentemente deu certo, pois apareceu o nome do arquivo:
 - 2023_12_10_221359_create_activities_table.php
 
 
-
 Consultei no MySQL, e o comando "desc activities" retornou a estrutura da tabela:
 <pre>
 +-------------+-----------------+------+-----+---------+----------------+
 | Field       | Type            | Null | Key | Default | Extra          |
 +-------------+-----------------+------+-----+---------+----------------+
 | id          | bigint unsigned | NO   | PRI | NULL    | auto_increment |
-| user_id     | bigint unsigned | NO   |     | NULL    |                |
+| user_id     | bigint unsigned | NO   | MUL | NULL    |                |
 | name        | varchar(100)    | NO   |     | NULL    |                |
 | description | varchar(255)    | YES  |     | NULL    |                |
 | created_at  | timestamp       | YES  |     | NULL    |                |
@@ -852,11 +873,17 @@ Uma dica que eu li na Internet seria verificar no arquivo
 - DatabaseSeeder.php
 
 E adicionar esta na linha na function "run":
-- $this->call(ActivitySeeder::class);
+<pre>
+$this->call([
+    UserSeeder::class,
+    ActivitySeeder::class,
+]);
+</pre>
 
 DONE!!!
+
 <pre>
-ysql> select * from activities;
+mysql> select * from activities;
 +----+---------+------------------------+-------------+------------+------------+------------+
 | id | user_id | name                   | description | created_at | updated_at | deleted_at |
 +----+---------+------------------------+-------------+------------+------------+------------+
