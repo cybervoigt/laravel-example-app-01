@@ -23,15 +23,10 @@ class ActivityResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(100),
-                Forms\Components\TextInput::make('description')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('testing')
+                Forms\Components\Textarea::make('description')
                     ->maxLength(255),
             ]);
     }
@@ -40,7 +35,7 @@ class ActivityResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user_id')
+                Tables\Columns\TextColumn::make('id')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
@@ -48,8 +43,6 @@ class ActivityResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),
-                // Tables\Columns\TextColumn::make('testing')
-                //     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -65,7 +58,6 @@ class ActivityResource extends Resource
             ])
             ->filters([
                 //
-                //'user_id' => auth()->user()->id
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

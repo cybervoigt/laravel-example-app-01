@@ -13,7 +13,12 @@ class ManageActivities extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+            ->mutateFormDataUsing(function (array $data): array {
+                $data['user_id'] = auth()->user()->id;
+                return $data;
+            })
+            ->createAnother(false),
         ];
     }
 }

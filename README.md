@@ -31,7 +31,8 @@ A ideia então seria simular um ambiente mais próximo do "mundo real" onde eu v
 - Métodos "create" e "store" do Controller
 - Criando um FormRequest
 - .
-- .
+- Criando uma Policy.
+- Criando uma Query Scope.
 - .
 
 Objetivo Principal:
@@ -1270,6 +1271,60 @@ E ao clicar no botão CADASTRAR, é feita a validação de que "name" precisa se
 Ao digitar algum valor e tentar novamente, o registro foi gravado com suceso e seus dados retornados para o navegador pelo método "store".
 
 
+
+# Criando uma Policy.
+
+- https://laravel.com/docs/10.x/authorization#creating-policies
+
+Policies são classes responsáveis por organizar a lógica de autorização de acessos a uma classe Model.
+
+Comando para criar:
+- ./vendor/bin/sail artisan make:policy ActivityPolicy
+
+Implementar os métodos que realização a devida validação.
+
+Neste caso, quero testar se o usuário logado por editar ou excluir uma Atividade.
+
+<pre>
+public function update(User $user, Activity $activity): bool
+{
+    return $user->id === $activity->user_id;
+}
+public function delete(User $user, Activity $activity): bool
+{
+    return $user->id === $activity->user_id;
+}
+</pre>
+
+Registrar a Policy na classe AuthServiceProvider, adicionando na propriedade $policies:
+<pre>
+protected $policies = [
+        Activity::class => ActivityPolicy::class,
+    ];
+</pre>
+
+
+# Criando uma Query Scope.
+
+- https://laravel.com/docs/10.x/eloquent#query-scopes
+
+Outra forma de criar restrições e controlar a autorização de acesso aos registros/objetos de uma classe Model, é por meio de Query Scopes.
+
+Comando para criar:
+- ./vendor/bin/sail artisan make:scope ActivityScope
+
+Na classe ActivityScope, na function apply, esta linha vai criar o filtro:
+<pre>
+$builder->where('user_id', '=', auth()->user()->id)
+</pre>
+
+Para ativar/registrar a Query Scope, agora precisamos incluir a function booted na classe Model "Activity":
+<pre>
+protected static function booted(): void
+{
+    static::addGlobalScope(new ActivityScope);
+}
+</pre>
 
 <hr>
 to be continued...
