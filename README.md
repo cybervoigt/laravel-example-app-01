@@ -279,6 +279,12 @@ Comando para criar uma chave para a aplicação
 2) opção 2 - PHP direto no Linux
 - php artisan key:generate
 
+## Obs 
+
+Depois de fazer alterações no arquivo .env devem ser executados estes 2 comandos:
+- php artisan config:clear
+- php artisan env
+
 ## Rodar a aplicação
 
 O arquivo "composer.lock" foi criado, e nele é gravada a versão instalada de cada pacote ou biblioteca de terceiros.
@@ -682,7 +688,9 @@ Resumindo:
 - E cada objeto criado a partir dessa classe representa uma linha na respectiva tabela.
 - É responsável pelo acesso e manipulação (CRUD) dos dados desta tabela.
 
-O Laravel tem um módulo chamado Eloquent, um Object-Relational Mapper (ORM) que é responsável por fazer esta tarefa de Mapeamento Objeto-Relacional. Esse foi o assunto do meu TCC (trabalho de conclusão de curso) em 2006: Aspectos de um framework para Mapeamento Objeto-Relacional.
+O Laravel tem um módulo chamado Eloquent, um Object-Relational Mapper (ORM) que é responsável por fazer esta tarefa de Mapeamento Objeto-Relacional.
+
+Esse foi o assunto do meu TCC (trabalho de conclusão de curso) em 2006: Aspectos de um framework para Mapeamento Objeto-Relacional.
 
 
 Ideia inicial com apenas 2 tabelas:
@@ -722,6 +730,9 @@ Resultado esperado:
 
 ## Migration
 
+Sobre criação de tabelas com Migrations
+- https://laravel.com/docs/10.x/migrations#tables
+
 No arquivo "2023_12_09_221359_create_activities_table.php", a function "up" já contém 2 linhas:
 - $table->id();
 - $table->timestamps();
@@ -735,6 +746,9 @@ $table->string('name', 100);
 $table->string('description')->nullable();
 $table->softDeletes();
 </pre>
+
+Sobre tipos de colunas:
+- https://laravel.com/docs/10.x/migrations#available-column-types
 
 Será criada uma coluna "user_id" tipo "chave estrangeira" que vai se relacionar com o usuário logado, da tabela "users".
 
@@ -1077,6 +1091,7 @@ Os dados do objeto/linha da tabela é retornada em JSON:
 
 Pergunta: onde seria o ponto ideal agora pra validar se o objeto encontrado, está relacionado ou pertence ao usuário logado?
 - Imagino que seja dentro do Controller.
+- Essa regra pode ser feita com "Query Scope", ver mais abaixo como criar...
 
 Por enquanto vou deixar esse IF dentro do método "show" do Controller:
 <pre>
@@ -1085,6 +1100,12 @@ if(auth()->user()->id == $activity->user_id)
     return $activity;
 }
 </pre>
+
+Depois que eu criei uma "Query Scope" para a model de Atividades, não precisa mais ser feito o if acima testando se a atividade está relacionada ao usuário.
+
+Ao tentar acessar o id de uma atividade relacionada a outro usuário o Laravel já retorna "404 | Not found"
+- http://localhost/atividade/10
+
 
 
 ### Situação 1
@@ -1100,7 +1121,7 @@ Ao tentar passar um ID de um registro relacionado a outro usuário, está ficand
 Outra situação, é ao tentar passar um ID inexistente, por exemplo:
 - http://localhost/atividade/999
 
-Está retornando a mensagem padrão do Laravel "404 | Not found"
+Depois de criada a "Query Scope" ambas as situações acima estão retornando a mensagem padrão do Laravel "404 | Not found"
 
 
 ## Definindo Middleware em uma classe Controller

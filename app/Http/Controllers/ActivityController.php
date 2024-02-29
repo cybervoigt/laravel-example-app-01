@@ -43,35 +43,35 @@ class ActivityController extends Controller
         else
         {
 
-        // Como validar um limite máximo de 20 caracteres no parametro 'filterName'
+            // Como validar um limite máximo de 20 caracteres no parametro 'filterName'
 
-        // Exemplo 1 - exibe erros na Blade com a variavel $errors
-        // $request->validate([
-        //     'filterName' => 'max:20',
-        // ]);
+            // Exemplo 1 - exibe erros na Blade com a variavel $errors
+            // $request->validate([
+            //     'filterName' => 'max:20',
+            // ]);
 
-        // Exemplo 2
-        $validator = Validator::make($params, [
-            'filterName' => 'max:20',
-        ]);
+            // Exemplo 2
+            $validator = Validator::make($params, [
+                'filterName' => 'max:20',
+            ]);
 
-        if($validator->fails())
-        {
-            $activities = auth()->user()->activities;
+            if($validator->fails())
+            {
+                $activities = auth()->user()->activities;
 
-            //dd($validator->messages());
+                //dd($validator->messages());
 
-            $filterName = $validator->messages();
-        }
-        elseif($filterName != '')
-        {
-            $activities = DB::table('activities')
-                ->where('user_id', auth()->user()->id)
-                ->where('name', 'like', '%' . $filterName . '%')
-                ->get();
+                $filterName = $validator->messages();
+            }
+            elseif($filterName != '')
+            {
+                $activities = DB::table('activities')
+                    ->where('user_id', auth()->user()->id)
+                    ->where('name', 'like', '%' . $filterName . '%')
+                    ->get();
 
-            //dd($activities);
-        }
+                //dd($activities);
+            }
         }
 
         return View('myactivities', [
@@ -110,14 +110,7 @@ class ActivityController extends Controller
         // "Model binding"
         // se o nome do parametro na rota bater com o nome dessa variavel,
         //  o Laravel já cria automaticamente o objeto referente ao Model
-        if(auth()->user()->id == $activity->user_id)
-        {
-            return $activity;
-        }
-        else
-        {
-            return 'Access Denied...';
-        }
+        return $activity;
     }
 
     /**

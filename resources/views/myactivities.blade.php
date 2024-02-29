@@ -11,11 +11,11 @@
             <input type="text" id="filterName" placeholder="type here...">
         @endif
 
-        <ul>
+        <div style="background-color:grey; padding: 5px; ">
             @foreach ($activities as $item)
-            <li>{{ $item->name }}</li>
+                <div style="background-color: {{ $loop->odd ? 'silver' : 'white' }}; margin: 10px; " >{{ $item->id . ' - '. $item->name }}</div>
             @endforeach
-        </ul>
+        </div>
 
     @endauth
 
