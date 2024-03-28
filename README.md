@@ -133,6 +133,12 @@ Acessar o GitHub, menu Settings, depois "SSH and GPG keys", e adicionar nova cha
 
 Eu repeti esta etapa nos 2 computadores.
 
+Erro : Could not open a connection to your authentication agent.
+
+Se ocorrer esse erro, deve executar o "agente de autenticação" com este comando
+- eval `ssh-agent -s`
+
+
 # Criando este repositório aqui no GitHub e salvando o projeto.
 
 Acessar o GitHub, aba Repositories, botão New;
