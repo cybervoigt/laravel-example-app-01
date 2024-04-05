@@ -136,7 +136,9 @@ Eu repeti esta etapa nos 2 computadores.
 Erro : Could not open a connection to your authentication agent.
 
 Se ocorrer esse erro, deve executar o "agente de autenticação" com este comando
-- eval `ssh-agent -s`
+<pre>
+eval `ssh-agent -s`
+</pre>
 
 
 # Criando este repositório aqui no GitHub e salvando o projeto.
